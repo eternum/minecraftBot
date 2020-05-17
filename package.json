@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/saharshy29/minecraftBot#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "mineflayer": "^2.15.0"
   }
 }
