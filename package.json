@@ -1,0 +1,23 @@
+{
+  "name": "minecraftBot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saharshy29/minecraftBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saharshy29/minecraftBot/issues"
+  },
+  "homepage": "https://github.com/saharshy29/minecraftBot#readme",
+  "dependencies": {
+    "mineflayer": "^2.15.0"
+  }
+}
