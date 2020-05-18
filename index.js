@@ -1,5 +1,4 @@
 const mineflayer = require('mineflayer')
-const express = require("express")
 const app = express()
 
 app.get("/",(req,res) => res.send("I'm awake."))
@@ -12,8 +11,8 @@ const bot = mineflayer.createBot({
 })
 
 bot.on('login', () => {
-		bot.chat('/nick [Bot] Booomerr')
     bot.chat('Hey, I’m Saharsh’s bot! i’ll be AFKing here for a bit.')
+		bot.chat('/nick [Bot] Booomerr')
     bot.chat('/afk')
 		
 })
