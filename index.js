@@ -69,4 +69,14 @@ bot.on('rain', () => {
 	bot.chat('ugghhhh. I hate the rain');
 })
 
+// Calls people when they try to move the bot
+bot.on('move', () => {
+	bot.chat('why are you shoving me');
+})
+
+// Calls out admin when teleported
+bot.on('forcedMove', () => {
+	bot.chat('why are you teleporting me');
+})
+
 app.listen(3000) // Keeping an open port for Uptime Robot
