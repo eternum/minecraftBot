@@ -14,7 +14,7 @@ const bot = mineflayer.createBot({
 })
 
 // Initial things when bot joins the server
-bot.on('login', () => {
+bot.on('spawn', () => {
 	console.clear(); // Clears the console to make the chat easier to read
 
 	bot.chat('/nick Booomerr Bot') // Setting nickname to make it clear that it's a bot
@@ -38,10 +38,26 @@ bot.on('chat', function(username, message) {
 	console.log(username + ": " + message)
 });
 
+function currentPlayers() {
+	console.log("Players online: " + Object.keys(bot.players))
+}
+
+bot.on('playerJoined', function(player) {
+	console.log("Someone joined");
+
+	currentPlayers();
+})
+
+bot.on('playerLeft', function(player) {
+	console.log("Someone left");
+
+	currentPlayers();
+})
+
 // Logs info when kicked
 bot.on('kicked', function(reason, loggedIn) {
 	console.log("Reason for kick: " + reason);
-	console.log("Logged In? "+ loggedIn)
+	console.log("Logged In? " + loggedIn)
 });
 
 // Calls people out when bed is broken
