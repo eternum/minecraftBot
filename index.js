@@ -4,7 +4,7 @@ const app = express()
 
 console.log("starting bot"); //A heads-up when the bot is starting up
 
-app.get("/", (req, res) => res.send("I'm awake."))
+app.get("/", (req, res) => res.send(""))
 
 const bot = mineflayer.createBot({
 	host: process.env.HOST,
@@ -52,11 +52,6 @@ bot.on('spawnReset', () => {
 // Has some fun with people when killed
 bot.on('death', () => {
 	bot.chat('why u got to be like that');
-})
-
-// Makes hatred of rain known
-bot.on('rain', () => {
-	bot.chat('uugghhh. I hate the rain');
 })
 
 app.listen(3000) // Keeping an open port for Uptime Robot
