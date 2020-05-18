@@ -1,4 +1,4 @@
-const mineflayer = require('mineflayer')
+aconst mineflayer = require('mineflayer')
 const express = require("express")
 const app = express()
 
@@ -44,15 +44,15 @@ bot.on('kicked', function(reason, loggedIn) {
 	console.log("Logged In? "+ loggedIn)
 });
 
-// Says hi to players when they join
-bot.on('playerJoined', function(player) {
-	bot.chat('sup ' + player);
-});
+// // Says hi to players when they join
+// bot.on('playerJoined', function(player) {
+// 	bot.chat('sup ' + player);
+// });
 
-// Says bye to players after they leave
-bot.on('playerLeft', function(player) {
-	bot.chat('bye ' + player);
-});
+// // Says bye to players after they leave
+// bot.on('playerLeft', function(player) {
+// 	bot.chat('bye ' + player);
+// });
 
 // Calls people out when bed is broken
 bot.on('spawnReset', () => {
