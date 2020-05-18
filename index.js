@@ -2,7 +2,7 @@ const mineflayer = require('mineflayer')
 const express = require("express")
 const app = express()
 
-console.log("starting bot"); //A heads-up that the bot is starting up
+console.log("starting bot"); //A heads-up when the bot is starting up
 
 app.get("/", (req, res) => res.send("I'm awake."))
 
@@ -15,15 +15,25 @@ const bot = mineflayer.createBot({
 
 // Initial things when bot joins the server
 bot.on('login', () => {
-	bot.chat('Hey, I’m Saharsh’s bot! I’ll be AFKing for a bit.') 	// Message to let players to about the bot
-	bot.chat('/nick Booomerr (bot)') // Setting nickname to make it clear that it's a bot
+	bot.chat('/nick Booomerr Bot') // Setting nickname to make it clear that it's a bot
+	bot.chat('sup') // Bot makes itself known
 	bot.chat('/afk') // Sets the bot to AFK
 })
 
 // Bot will quit when whispered to
 bot.on('whisper', function(username, message) {
 	if (username === bot.username) return;
+
+	// Bot messes with people when whispered to before leaving
+	bot.chat('I see that all of you do not like me. I will leave then.')
+	bot.chat('meanies')
+	bot.chat('I want a courtcase')
 	bot.quit();
 });
 
-app.listen(3000, () => console.log("I'm on 3000"))
+// Logs all chat messages in the console
+bot.on('chat', function(username, message) {
+	console.log(username + ": " + message)
+});
+
+app.listen(3000) // Keeping an open port for Uptime Robot
