@@ -15,6 +15,8 @@ const bot = mineflayer.createBot({
 
 // Initial things when bot joins the server
 bot.on('login', () => {
+	console.clear(); // Clears the console to make the chat easier to read
+
 	bot.chat('/nick Booomerr Bot') // Setting nickname to make it clear that it's a bot
 	bot.chat('sup') // Bot makes itself known
 	bot.chat('/afk') // Sets the bot to AFK
