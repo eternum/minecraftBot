@@ -24,7 +24,7 @@ bot.on('login', () => {
 
 // Bot will quit when whispered to
 bot.on('whisper', function(username, message) {
-	if (username === bot.username) return;
+	if (username === bot.username) return; // Checks to make sure that the bot isn't whispering to itself
 
 	// Bot messes with people when whispered to before leaving
 	bot.chat('I see that all of you do not like me. I will leave then.')
@@ -48,5 +48,20 @@ bot.on('kicked', function(reason, loggedIn) {
 bot.on('playerJoined', function(player) {
 	bot.chat('sup ' + player);
 });
+
+// Calls people out when bed is broken
+bot.on('spawnReset', () => {
+	bot.chat('Who broke my bed');
+})
+
+// Has some fun with people when killed
+bot.on('death', () => {
+	bot.chat('why u got to be so rude');
+})
+
+// Makes hatred of rain known
+bot.on('rain', () => {
+	bot.chat('ugghhhh. I hate the rain');
+})
 
 app.listen(3000) // Keeping an open port for Uptime Robot
