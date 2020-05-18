@@ -61,17 +61,12 @@ bot.on('spawnReset', () => {
 
 // Has some fun with people when killed
 bot.on('death', () => {
-	bot.chat('why u got to be so rude');
+	bot.chat('why u got to be like that');
 })
 
 // Makes hatred of rain known
 bot.on('rain', () => {
 	bot.chat('ugghhhh. I hate the rain');
-})
-
-// Calls people when they try to move the bot
-bot.on('move', () => {
-	bot.chat('why are you shoving me');
 })
 
 // Calls out admin when teleported
