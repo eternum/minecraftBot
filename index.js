@@ -49,6 +49,11 @@ bot.on('playerJoined', function(player) {
 	bot.chat('sup ' + player);
 });
 
+// Says bye to players after they leave
+bot.on('playerLeft', function(player) {
+	bot.chat('bye ' + player);
+});
+
 // Calls people out when bed is broken
 bot.on('spawnReset', () => {
 	bot.chat('Who broke my bed');
