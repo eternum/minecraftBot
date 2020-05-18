@@ -38,4 +38,9 @@ bot.on('chat', function(username, message) {
 	console.log(username + ": " + message)
 });
 
+bot.on('kicked', function(reason, loggedIn) {
+	console.log("Reason for kick: " + reason);
+	console.log("Logged In? "+ loggedIn)
+});
+
 app.listen(3000) // Keeping an open port for Uptime Robot
