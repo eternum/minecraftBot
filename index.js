@@ -18,7 +18,7 @@ bot.on('login', () => {
 	console.clear(); // Clears the console to make the chat easier to read
 
 	bot.chat('/nick Booomerr Bot') // Setting nickname to make it clear that it's a bot
-	bot.chat('sup') // Bot makes itself known
+	bot.chat('yo') // Bot makes itself known
 	bot.chat('/afk') // Sets the bot to AFK
 })
 
@@ -29,7 +29,7 @@ bot.on('whisper', function(username, message) {
 	// Bot messes with people when whispered to before leaving
 	bot.chat('I see that all of you do not like me. I will leave then.')
 	bot.chat('meanies')
-	bot.chat('I want a courtcase')
+	bot.chat('I want to file a courtcase')
 	bot.quit();
 });
 
@@ -38,9 +38,15 @@ bot.on('chat', function(username, message) {
 	console.log(username + ": " + message)
 });
 
+// Logs info when kicked
 bot.on('kicked', function(reason, loggedIn) {
 	console.log("Reason for kick: " + reason);
 	console.log("Logged In? "+ loggedIn)
+});
+
+// Says hi to players when they join
+bot.on('playerJoined', function(player) {
+	bot.chat('sup ' + player);
 });
 
 app.listen(3000) // Keeping an open port for Uptime Robot
