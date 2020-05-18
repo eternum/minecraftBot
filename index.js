@@ -18,7 +18,6 @@ bot.on('spawn', () => {
 	console.clear(); // Clears the console to make the chat easier to read
 
 	bot.chat('/nick Booomerr Bot') // Setting nickname to make it clear that it's a bot
-	bot.chat('yo') // Bot makes itself known
 	bot.chat('/afk') // Sets the bot to AFK
 })
 
@@ -38,20 +37,17 @@ bot.on('chat', function(username, message) {
 	console.log(username + ": " + message)
 });
 
-function currentPlayers() {
-	console.log("Players online: " + Object.keys(bot.players))
+function currentPlayers(action) {
+	console.log("Someone " + action);
+	console.log("Players online: " + Object.keys(bot.players));
 }
 
 bot.on('playerJoined', function(player) {
-	console.log("Someone joined");
-
-	currentPlayers();
+	currentPlayers("joined");
 })
 
 bot.on('playerLeft', function(player) {
-	console.log("Someone left");
-
-	currentPlayers();
+	currentPlayers("left");
 })
 
 // Logs info when kicked
