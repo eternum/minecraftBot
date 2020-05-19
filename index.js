@@ -1,8 +1,9 @@
 const mineflayer = require('mineflayer')
 const express = require("express")
 const app = express()
+const chalk = require("chalk");
 
-console.log("starting bot"); //A heads-up when the bot is starting up
+console.log(chalk.green("Bot is starting")); //A heads-up when the bot is starting up
 
 app.get("/", (req, res) => res.send(""))
 
@@ -14,22 +15,22 @@ const bot = mineflayer.createBot({
 })
 
 // Initial things when bot joins the server
-bot.on('spawn', () => {
+bot.on('login', () => {
 	console.clear(); // Clears the console to make the chat easier to read
 
 	bot.chat('/nick Booomerr Bot') // Setting nickname to make it clear that it's a bot
 	bot.chat('/afk') // Sets the bot to AFK
+
+	console.log(chalk.green("Logged in to the server")) // Clearly able to tell in console if bot has logged on
 })
 
 // Bot will quit when whispered to
 bot.on('whisper', function(username, message) {
 	if (username === bot.username) return; // Checks to make sure that the bot isn't whispering to itself
 
-	// Bot messes with people when whispered to before leaving
-	bot.chat('I see that all of you do not like me. I will leave then.')
-	bot.chat('meanies')
-	bot.chat('I want to file a courtcase')
 	bot.quit();
+
+	console.log(chalk.bgRedBright.bold("Bot left the server")) // Making it clear that the bot left
 });
 
 // Logs all chat messages in the console
@@ -38,8 +39,8 @@ bot.on('chat', function(username, message) {
 });
 
 function currentPlayers(action) {
-	console.log("Someone " + action);
-	console.log("Players online: " + Object.keys(bot.players));
+	console.log(chalk.bgYellow("Someone " + action));
+	console.log(chalk.bgYellow("Players online: " + Object.keys(bot.players)));
 }
 
 bot.on('playerJoined', function(player) {
@@ -52,8 +53,8 @@ bot.on('playerLeft', function(player) {
 
 // Logs info when kicked
 bot.on('kicked', function(reason, loggedIn) {
-	console.log("Reason for kick: " + reason);
-	console.log("Logged In? " + loggedIn)
+	console.log(chalk.bgCyanBright("Reason for kick: " + reason));
+	console.log(chalk.bgCyanBright("Logged In? " + loggedIn))
 });
 
 // Calls people out when bed is broken
