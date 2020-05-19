@@ -3,9 +3,9 @@ const express = require("express")
 const app = express()
 const chalk = require("chalk");
 
-console.log(chalk.green("Bot is starting")); //A heads-up when the bot is starting up
-
 app.get("/", (req, res) => res.send(""))
+
+console.log(chalk.green("Bot is starting")); //A heads-up when the bot is starting up
 
 const bot = mineflayer.createBot({
 	host: process.env.HOST,
@@ -15,15 +15,15 @@ const bot = mineflayer.createBot({
 })
 
 // Initial things when bot joins the server
-bot.on('login', () => {
+bot.on('spawn', () => {
 	console.clear(); // Clears the console to make the chat easier to read
 
 	bot.chat('/nick Booomerr Bot') // Setting nickname to make it clear that it's a bot
 	bot.chat('/afk') // Sets the bot to AFK
 
-	console.log(chalk.green("Logged in to the server")) // Clearly able to tell in console if bot has logged on
+	console.log(chalk.green("Bot joined the server")) // Clearly able to tell in console if bot has logged on
 
-	// Message that can be sent a second after hte bot joins
+	// Bot's join message
 	setTimeout(function() {
 		bot.chat('');
 	}, 1000);
@@ -35,27 +35,26 @@ bot.on('chat', function(username, message) {
 });
 
 function currentPlayers(action) {
-	console.log(chalk.bgYellow("Someone " + action));
-	console.log(chalk.bgYellow("Players online: " + Object.keys(bot.players)));
+	console.log(chalk.yellow("Someone " + action + ": " + Object.keys(bot.players)));
 }
 
-// Commands that EC29 can run
-bot.on('whisper', function(username, message)) {
+// Commands that only EC29 can run
+bot.on('whisper', function(username, message) {
 	if (username === bot.username) return; // Checks to make sure that the bot isn't whispering to itself
 	if (username != 'expresscow29') return; // Makes sure the EC29 is the one issuing a command
 
 	// Lists all the items in nearrby chests
-	if (message == 'list chests')  {
+	if (message == 'list chests') {
 		bot.chat('/msg ' + username + " " + chest.items());
 	}
 
 	// Leaves the server
-	else if (message == 'leave')  {
+	else if (message == 'leave') {
 		bot.quit();
 
-		console.log(chalk.bgRedBright.bold("Bot left the server")) // Making it clear that the bot left
+		console.log(chalk.red("Bot left the server")) // Making it clear that the bot left and records time
 	}
-}
+})
 
 
 bot.on('playerJoined', function(player) {
@@ -71,8 +70,7 @@ bot.on('playerLeft', function(player) {
 
 // Logs info when kicked
 bot.on('kicked', function(reason, loggedIn) {
-	console.log(chalk.bgCyanBright("Reason for kick: " + reason));
-	console.log(chalk.bgCyanBright("Logged In? " + loggedIn))
+	console.log(chalk.cyan("Kicked for " + reason + "while " + loggedIn))
 });
 
 // Calls people out when bed is broken
