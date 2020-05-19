@@ -22,6 +22,11 @@ bot.on('login', () => {
 	bot.chat('/afk') // Sets the bot to AFK
 
 	console.log(chalk.green("Logged in to the server")) // Clearly able to tell in console if bot has logged on
+
+	// Message that can be sent a second after hte bot joins
+	setTimeout(function() {
+		bot.chat('');
+	}, 1000);
 })
 
 // Bot will quit when whispered to
@@ -44,7 +49,10 @@ function currentPlayers(action) {
 }
 
 bot.on('playerJoined', function(player) {
-	currentPlayers("joined");
+	// Waits a second before checking to see who's online
+	setTimeout(function() {
+		currentPlayers("joined");
+	}, 2000);
 })
 
 bot.on('playerLeft', function(player) {
