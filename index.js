@@ -29,15 +29,6 @@ bot.on('login', () => {
 	}, 1000);
 })
 
-// Bot will quit when whispered to
-bot.on('whisper', function(username, message) {
-	if (username === bot.username) return; // Checks to make sure that the bot isn't whispering to itself
-
-	bot.quit();
-
-	console.log(chalk.bgRedBright.bold("Bot left the server")) // Making it clear that the bot left
-});
-
 // Logs all chat messages in the console
 bot.on('chat', function(username, message) {
 	console.log(username + ": " + message)
@@ -47,6 +38,25 @@ function currentPlayers(action) {
 	console.log(chalk.bgYellow("Someone " + action));
 	console.log(chalk.bgYellow("Players online: " + Object.keys(bot.players)));
 }
+
+// Commands that EC29 can run
+bot.on('whisper', function(username, message)) {
+	if (username === bot.username) return; // Checks to make sure that the bot isn't whispering to itself
+	if (username != 'expresscow29') return; // Makes sure the EC29 is the one issuing a command
+
+	// Lists all the items in nearrby chests
+	if (message == 'list chests')  {
+		bot.chat('/msg ' + username + " " + chest.items());
+	}
+
+	// Leaves the server
+	else if (message == 'leave')  {
+		bot.quit();
+
+		console.log(chalk.bgRedBright.bold("Bot left the server")) // Making it clear that the bot left
+	}
+}
+
 
 bot.on('playerJoined', function(player) {
 	// Waits a second before checking to see who's online
