@@ -2,10 +2,15 @@ const mineflayer = require('mineflayer')
 const express = require("express")
 const app = express()
 const chalk = require("chalk");
+const v = require("vec3")
 
 app.get("/", (req, res) => res.send(""))
 
-console.log(chalk.green("Bot is starting")); //A heads-up when the bot is starting up
+console.log(chalk.green("Bot is starting")); //A heads-up that the bot is starting
+
+function currentPlayers(action) {
+	console.log(chalk.yellow("Someone " + action + ": " + Object.keys(bot.players)));
+}
 
 const bot = mineflayer.createBot({
 	host: process.env.HOST,
@@ -18,14 +23,39 @@ const bot = mineflayer.createBot({
 bot.on('spawn', () => {
 	console.clear(); // Clears the console to make the chat easier to read
 
-	bot.chat('/nick Booomerr Bot') // Setting nickname to make it clear that it's a bot
+	bot.chat('/nick Booomerr [BOT]') // Setting nickname to make it clear that it's a bot
 	bot.chat('/afk') // Sets the bot to AFK
 
 	console.log(chalk.green("Bot joined the server")) // Clearly able to tell in console if bot has logged on
 
+	trapdoor = bot.blockAt(v(1176, 185, -773))
+	console.log(trapdoor.stateId)
+	noteblock = bot.blockAt(v(1175, 184, -773))
+	bot.lookAt(v(1174, 0, -773))	/*
+		bot.activateBlock(block, (err) => {
+				
+				if (err) {
+	
+						bot.chat(err.message)
+					}
+			})
+	*/
+	setInterval(function() {
+
+		if (trapdoor.stateId == 7064) {
+			bot.activateItem();
+			console.log("trapdoor")
+
+		} else {
+			bot.activateBlock(noteblock);
+			console.log("noteblock")
+
+		}
+	}, 500);
+
 	// Bot's join message
 	setTimeout(function() {
-		bot.chat('');
+		bot.chat('hi');
 	}, 1000);
 })
 
@@ -34,28 +64,14 @@ bot.on('chat', function(username, message) {
 	console.log(username + ": " + message)
 });
 
-function currentPlayers(action) {
-	console.log(chalk.yellow("Someone " + action + ": " + Object.keys(bot.players)));
-}
-
 // Commands that only EC29 can run
 bot.on('whisper', function(username, message) {
-	if (username === bot.username) return; // Checks to make sure that the bot isn't whispering to itself
-	if (username != 'expresscow29') return; // Makes sure the EC29 is the one issuing a command
+	if (username == bot.username) return; // Checks to make sure that the bot isn't whispering to itself
 
-	// Lists all the items in nearrby chests
-	if (message == 'list chests') {
-		bot.chat('/msg ' + username + " " + chest.items());
-	}
+	bot.quit();
 
-	// Leaves the server
-	else if (message == 'leave') {
-		bot.quit();
-
-		console.log(chalk.red("Bot left the server")) // Making it clear that the bot left and records time
-	}
+	console.log(chalk.red("Bot left the server")) // Making it clear that the bot left
 })
-
 
 bot.on('playerJoined', function(player) {
 	// Waits a second before checking to see who's online
