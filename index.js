@@ -1,3 +1,13 @@
+/*
+Things to add:
+- Come command to go to player
+- Commands that only EC29 can run vs global/eternum commands
+- Log when a bot is commanded
+- List chests nearby
+- Constatnly attack attacks
+- Constantly mines what's in front of it (for cobble/obi farm)
+*/
+
 const mineflayer = require('mineflayer')
 const express = require("express")
 const app = express()
@@ -28,41 +38,10 @@ bot.on('spawn', () => {
 
 	console.log(chalk.green("Bot joined the server")) // Clearly able to tell in console if bot has logged on
 
-	trapdoor = bot.blockAt(v(1176, 185, -773))
-	console.log(trapdoor.stateId)
-	noteblock = bot.blockAt(v(1175, 184, -773))
-	bot.lookAt(v(1174, 0, -773))	/*
-		bot.activateBlock(block, (err) => {
-				
-				if (err) {
-	
-						bot.chat(err.message)
-					}
-			})
-	*/
-	setInterval(function() {
+	bot.setQuickBarSlot(0);
 
-		if (trapdoor.stateId == 7064) {
-			bot.activateItem();
-			console.log("trapdoor")
-
-		} else {
-			bot.activateBlock(noteblock);
-			console.log("noteblock")
-
-		}
-	}, 500);
-
-	// Bot's join message
-	setTimeout(function() {
-		bot.chat('hi');
-	}, 1000);
+	bot.chat(''); // Bot's join message
 })
-
-// Logs all chat messages in the console
-bot.on('chat', function(username, message) {
-	console.log(username + ": " + message)
-});
 
 // Commands that only EC29 can run
 bot.on('whisper', function(username, message) {
@@ -72,6 +51,11 @@ bot.on('whisper', function(username, message) {
 
 	console.log(chalk.red("Bot left the server")) // Making it clear that the bot left
 })
+
+// Logs all chat messages in the console
+bot.on('chat', function(username, message) {
+	console.log(username + ": " + message)
+});
 
 bot.on('playerJoined', function(player) {
 	// Waits a second before checking to see who's online
