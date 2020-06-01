@@ -1,19 +1,20 @@
 /*
 Things to add:
 - Come command to go to player
-- Commands that only EC29 can run vs global/eternum commands
-- Log when a bot is commanded
-- List chests nearby
-- Constatnly attack attacks
+- Constantly attacks
 - Constantly mines what's in front of it (for cobble/obi farm)
-- Turn on physics ot be able to push the bot around
+- Turn on physics to be able to push the bot around
 */
 
 const mineflayer = require('mineflayer')
 const express = require("express")
 const app = express()
 const chalk = require("chalk");
-const v = require("vec3")
+const v = require("vec3");
+const mineflayer = require('mineflayer');
+const navigatePlugin = require('mineflayer-navigate')(mineflayer);
+const bot = mineflayer.createBot({ username: 'Player' });
+navigatePlugin(bot);
 
 app.get("/", (req, res) => res.send(""))
 
@@ -26,7 +27,7 @@ const bot = mineflayer.createBot({
 	password: process.env.PASSWORD,
 })
 
-var eternumMembers = ['ExpressCow29', 'ExpressCow30'];
+var eternumMembers = ['ExpressCow29', 'ExpressCow30', 'Nice6599', 'Nice6099'];
 
 // Initial things when bot joins the server
 bot.on('spawn', () => {
@@ -35,7 +36,6 @@ bot.on('spawn', () => {
 
 	bot.chat('/nick Booomerr [BOT]') // Setting nickname to make it clear that it's a bot
 	bot.chat('/afk') // Sets the bot to AFK
-
 	bot.chat('hi'); // Bot's join message
 })
 
@@ -43,11 +43,18 @@ bot.on('spawn', () => {
 bot.on('whisper', function(username, message) {
 	if (username == bot.username) return; // Checks to make sure that the bot isn't whispering to itself
 	
+	// Commands Exclusive to Eternum Members
 	if (eternumMembers.includes(username)) {
 		if(message.includes("leave")) {
 		console.log(chalk.red(username + "said to leave"));
 		quitGame();
-		}	
+		}
+
+
+	}
+
+	if (!eternumMembers.includes(username)) {
+		bot.chat('/msg ' + username + " what do you want"); //Rude to non-Eternum members
 	}
 
 })
