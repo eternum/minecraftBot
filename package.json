@@ -21,7 +21,6 @@
     "chalk": "^4.0.0",
     "express": "^4.17.1",
     "mineflayer": "^2.15.0",
-    "mineflayer-navigate": "0.0.10",
     "vec3": "^0.1.4"
   }
 }
