@@ -6,6 +6,7 @@ Things to add:
 - List chests nearby
 - Constatnly attack attacks
 - Constantly mines what's in front of it (for cobble/obi farm)
+- Turn on physics ot be able to push the bot around
 */
 
 const mineflayer = require('mineflayer')
@@ -22,6 +23,11 @@ function currentPlayers(action) {
 	console.log(chalk.yellow("Someone " + action + ": " + Object.keys(bot.players)));
 }
 
+function quitGame() {
+	bot.quit();
+	console.log(chalk.red("Bot left the server")) // Making it clear that the bot left
+}
+
 const bot = mineflayer.createBot({
 	host: process.env.HOST,
 	port: parseInt(process.env.PORT),
@@ -32,24 +38,23 @@ const bot = mineflayer.createBot({
 // Initial things when bot joins the server
 bot.on('spawn', () => {
 	console.clear(); // Clears the console to make the chat easier to read
+	console.log(chalk.green("Bot joined the server")) // Clearly able to tell in console if bot has logged on
 
 	bot.chat('/nick Booomerr [BOT]') // Setting nickname to make it clear that it's a bot
 	bot.chat('/afk') // Sets the bot to AFK
 
-	console.log(chalk.green("Bot joined the server")) // Clearly able to tell in console if bot has logged on
-
-	bot.setQuickBarSlot(0);
-
-	bot.chat(''); // Bot's join message
+	bot.chat('hi'); // Bot's join message
 })
 
 // Commands that only EC29 can run
 bot.on('whisper', function(username, message) {
 	if (username == bot.username) return; // Checks to make sure that the bot isn't whispering to itself
 
-	bot.quit();
+	if(message.includes("leave")) {
+		console.log(username);
+		quitGame();
+	}
 
-	console.log(chalk.red("Bot left the server")) // Making it clear that the bot left
 })
 
 // Logs all chat messages in the console
