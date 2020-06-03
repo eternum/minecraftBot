@@ -1,7 +1,6 @@
 /*
 Things to add:
 - Come command to go to player (Gonna be tough)
-- List chests nearby (can't do this)
 - Constatnly attacks
 - Constantly mines what's in front of it (for cobble/obi farm)
 - Turn on physics ot be able to push the bot around
@@ -33,7 +32,19 @@ bot.on('spawn', () => {
 	bot.chat('/nick Booomerr [BOT]') // Setting nickname to make it clear that it's a bot
 	bot.chat('/afk') // Sets the bot to AFK
 
-	bot.chat('hi'); // Bot's join message
+
+	setTimeout(function() {
+		bot.chat('hi ken');
+	}, 1000);
+	bot.chat('hi ken'); // Bot's join message
+
+	setTimeout(function() {
+		bot.chat('bye ken');
+	}, 3000);
+
+	setTimeout(function() {
+		bot.quit();
+	}, 1000);
 })
 
 // Commands that only EC29 can run
