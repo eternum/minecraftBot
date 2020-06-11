@@ -1,10 +1,3 @@
-/*
-Things to add:
-- Come command to go to player (Gonna be tough)
-- Constatnly attacks
-- Constantly mines what's in front of it (for cobble/obi farm)
-- Turn on physics ot be able to push the bot around
-*/
 require('dotenv').config();
 const mineflayer = require('mineflayer');
 const express = require('express');
