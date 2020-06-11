@@ -6,3 +6,5 @@ The goal of this bot was to emulate regular Minecraft AFKing using somehthing li
 It's original purpose was that it would AFK on Hack Club's Minecraft Server.  The server only allows bots that emulate what a normal AFK player would be able to do. This introduced many issues since [Mineflayer](https://mineflayer.prismarine.js.org/), the library that the bot uses, does not make things like AFK fishing and attacking that would emulate an auto-clicker very simple. 
 
 This bot runs on [repl.it](https://repl.it) and uses [Uptime Robot](https://uptimerobot.com) to keep it awake.
+
+[![Run on Repl.it](https://repl.it/badge/github/eternumhq/minecraftbot)](https://repl.it/github/eternumhq/minecraftbot)
