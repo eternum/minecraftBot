@@ -72,15 +72,6 @@ let botListener = () => {
 		}, 2000);
 	});
 
-	const currentPlayers = (action) => {
-		console.log(chalk.yellow('Someone ' + action + ': ' + Object.keys(bot.players)));
-	};
-
-	const quitGame = () => {
-		bot.quit();
-		console.log(chalk.red('Bot left the server')); // Making it clear that the bot left
-	};
-
 	bot.on('playerLeft', function(player) {
 		currentPlayers('left');
 	});
@@ -99,6 +90,15 @@ let botListener = () => {
 	bot.on('death', () => {
 		bot.chat('why u got to be like that');
 	});
+};
+
+const currentPlayers = (action) => {
+    console.log(chalk.yellow('Someone ' + action + ': ' + Object.keys(bot.players)));
+};
+
+const quitGame = () => {
+    bot.quit();
+    console.log(chalk.red('Bot left the server')); // Making it clear that the bot left
 };
 
 app.listen(3000); // Keeping an open port for Uptime Robot
