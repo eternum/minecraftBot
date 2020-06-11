@@ -22,7 +22,7 @@ const bot = mineflayer.createBot({
 	password: process.env.PASSWORD,
 })
 
-var eternumMembers = ['ExpressCow29', 'ExpressCow30'];
+var eternumMembers = ['ExpressCow29', 'ExpressCow30', 'NotACreativeName', 'Jdawgst8fire', 'nice6599'];
 
 // Initial things when bot joins the server
 bot.on('spawn', () => {
