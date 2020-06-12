@@ -1,97 +1,154 @@
-require('dotenv').config();
-const mineflayer = require('mineflayer');
-const express = require('express');
-const app = express();
-const chalk = require('chalk');
-const fs = require('fs');
+/// WebSocket And stuff
+const url = "http://bots.nswanson.com";
+var connected = false;
 
-const initBot = () => {
-	return mineflayer.createBot({
-		host: process.env.HOST,
-		port: parseInt(process.env.PORT),
-		username: process.env.NAME ? process.env.NAME : 'index',
-		password: process.env.PASSWORD
-	});
-};
+function say(botId, message) {
+  send({
+    action: "say",
+    botId: botId,
+    message: message,
+  });
+}
+function setServer(botId, address, port) {
+  var address = document.getElementById("server").value;
+  var port = document.getElementById("port").value;
+  var data = { address: address, port: port };
 
-var bot; //initializes bot
+  send({
+    action: "setServer",
+    botId: botId,
+    data: data,
+  });
+}
+function stopBot(botId) {
+  document.getElementById("botStatus").class = "label label-danger";
+  document.getElementById("botStatus").innerHTML = "Disconnected";
+  send({
+    action: "stop",
+    botId: botId,
+  });
+}
+function startBot(botId) {
+  document.getElementById("botStatus").class = "label label-info";
+  document.getElementById("botStatus").innerHTML = "loading";
+  send({
+    action: "start",
+    botId: botId,
+  });
+}
+function getCoords(botId) {
+  if (connected) {
+    send({
+      action: "getCoords",
+      botId: botId,
+    });
+  }
+}
 
-app.post('/startbot', (req, res) => {
-	bot = initBot();
-	res.send(200);
-	botListener();
-});
+function listenSocket() {
+  socketserver.onopen = function (event) {
+    document.getElementById("serverStatus").class = "label label-success";
+    document.getElementById("serverStatus").innerHTML = "Online";
+    console.log("connected");
+    connected = true;
+  };
+  socketserver.onmessage = function (event) {
+    var data = JSON.parse(event.data);
+    switch (data.action) {
+      case "chat":
+        term.writeln(data.message);
+        prompt(term);
+      case "coords":
+        document.getElementById("coords").innerHTML = event.data;
+    }
+    console.log(event.data);
+  };
+  socketserver.onclose = function (event) {
+    document.getElementById("serverStatus").class = "label label-danger";
+    document.getElementById("serverStatus").style.backgroundColor = "#CA3C3C";
+    document.getElementById("serverStatus").innerHTML = "Offline";
+    connected = false;
+  };
+}
 
-app.post('/stopbot', (req, res) => {
-	quitGame();
-	res.send(200);
-});
+/*
+required headers
+action:
+botId:
 
-console.log(chalk.green('Bot is starting')); //A heads-up that the bot is starting
+*/
+function send(message) {
+  console.log(message);
+  socketserver.send(JSON.stringify(message));
+}
 
-const eternumMembers = JSON.parse(fs.readFileSync('eternum.json'));
+function closeWebSocket() {
+  document.getElementById("serverStatus").class = "label label-danger";
+  document.getElementById("serverStatus").innerHTML = "Offline";
 
-let botListener = () => {
-	// Initial things when bot joins the server
-	bot.on('spawn', () => {
-		console.clear(); // Clears the console to make the chat easier to read
-		console.log(chalk.green('Bot joined the server')); // Clearly able to tell in console if bot has logged on
+  socketserver.close();
+}
+function startWebSocket() {
+  socketserver = new WebSocket("ws://192.168.7.235:3000", "protocolOne");
+  listenSocket();
+}
 
-		bot.chat('/nick Booomerr [BOT]'); // Setting nickname to make it clear that it's a bot
-		bot.chat('/afk'); // Sets the bot to AFK
-	});
+/// Terminal
+var term = new Terminal();
+var line = "";
+term.open(document.getElementById("terminal"));
+term.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ");
 
-	// Commands that only EC29 can run
-	bot.on('whisper', function(username, message) {
-		if (username == bot.username) return; // Checks to make sure that the bot isn't whispering to itself
+function runFakeTerminal() {
+  if (term._initialized) {
+    return;
+  }
 
-		if (eternumMembers.includes(username)) {
-			if (message.includes('leave')) {
-				console.log(chalk.red(username + 'said to leave'));
-				quitGame();
-			}
-		}
-	});
+  term._initialized = true;
 
-	// Logs all chat messages in the console
-	bot.on('chat', function(username, message) {
-		console.log(username + ': ' + message);
-	});
+  term.prompt = () => {
+    term.write("\r\n$ ");
+  };
 
-	bot.on('playerJoined', function(player) {
-		// Waits a second before checking to see who's online
-		setTimeout(function() {
-			currentPlayers('joined');
-		}, 2000);
-	});
+  term.writeln("Welcome to xterm.js");
+  term.writeln(
+    "This is a local terminal emulation, without a real terminal in the back-end."
+  );
+  term.writeln("Type some keys and commands to play around.");
+  term.writeln("");
+  prompt(term);
 
-	bot.on('playerLeft', function(player) {
-		currentPlayers('left');
-	});
+  term.onData((e) => {
+    switch (e) {
+      case "\r": // Enter
+        console.log(line);
+        say(null, line);
+      case "\u0003": // Ctrl+C
+        line = "";
+        prompt(term);
+        break;
+      case "\u007F": // Backspace (DEL)
+        // Do not delete the prompt
+        if (line.length > 0) {
+          line = line.substring(0, line.length - 1);
+        }
+        if (term._core.buffer.x > 2) {
+          term.write("\b \b");
+        }
+        break;
+      default:
+        line += e;
 
-	// Logs info when kicked
-	bot.on('kicked', function(reason, loggedIn) {
-		console.log(chalk.cyan('Kicked for ' + reason + 'while ' + loggedIn));
-	});
+        // Print all other characters for demo
 
-	// Calls people out when bed is broken
-	bot.on('spawnReset', () => {
-		bot.chat('Who broke my bed');
-	});
+        term.write(e);
+    }
+  });
+}
 
-	// Has some fun with people when killed
-	bot.on('death', () => {
-		bot.chat('why u got to be like that');
-	});
-};
+function prompt(term) {
+  term.write("\r\n> ");
+}
 
-const currentPlayers = (action) => {
-    console.log(chalk.yellow('Someone ' + action + ': ' + Object.keys(bot.players)));
-};
-
-const quitGame = () => {
-    bot.quit();
-    console.log(chalk.red('Bot left the server')); // Making it clear that the bot left
-};
-
-app.listen(3000); // Keeping an open port for Uptime Robot
+runFakeTerminal();
+startWebSocket();
