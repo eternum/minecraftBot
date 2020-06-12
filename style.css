@@ -1,0 +1,9 @@
+.status {
+  position: fixed;
+  min-height: 5%;
+  width: 140;
+
+  text-align: right;
+  letter-spacing: 0px;
+  right: 10px;
+}
