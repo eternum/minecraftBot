@@ -4,20 +4,66 @@
   --color--bg: #fff;
   --color--warning: #cc3600;
   --color--success: #26cf86;
-  --color--gold: #eca72c; 
+  --color--gold: #eca72c;
 }
 
-body {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body {
+  padding: 10%;
 
   background: var(--color--bg);
   color: var(--color--primary);
- 
+
   font-family: 'Merriweather', serif;
+}
+
+.content {
+  margin: auto;
+
+  max-width: 700px;
+  max-height: auto;
 }
 
 h1 {
   font-family: 'Lora', serif;
+  font-size: 5em;
+
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+
+div {
+  margin: 1em 0;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.inline {
+  display: flex;
+
+  text-align: center;
+  justify-content: space-between;
+}
+
+#controlPanel {
+  margin-top: 1em;
+}
+
+.button-group {
+  margin: 1em 0;
+  justify-content: center;
+}
+
+button {
+  margin: 0 1em;
 }

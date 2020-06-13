@@ -13,28 +13,50 @@
     <script src="node_modules/xterm/lib/xterm.js"></script>
   </head>
   <body>
-    <h1>Bot Controller</h1>
-    <div class="inline">
-      <h5>Server: <span id="serverStatus">Offline</span></h5>
-      <h5>Bot: <span id="botStatus">Disconnected</span></h5>
-    </div>
-    <h2 id="coords">no cords</h2>
+    <div class="content">
+      <h1>Bot Controller</h1>
+      <div class="inline">
+        <p>
+          <span class="bold">Server:</span>
+          <span id="serverStatus">Offline</span>
+        </p>
+        <p>
+          <span class="bold">Bot:</span>
+          <span id="botStatus">Disconnected</span>
+        </p>
+      </div>
+      <h2 id="coords">no cords</h2>
 
-    <div id="input">
-      <p>Server: <input type="string" value="mc.hackclub.com" id="server" /></p>
-      <p>Port: <input type="number" value="25565" id="port" /></p>
-    </div>
-    <div id="terminal">
-      <script src="index.js"></script>
-    </div>
+      <div id="input" class="inline">
+        <p>
+          <span class="bold">Server:</span>
+          <input type="string" value="mc.hackclub.com" id="server" />
+        </p>
+        <p>
+          <span class="bold">Port:</span>
+          <input type="number" value="25565" id="port" />
+        </p>
+      </div>
+      <div id="terminal">
+        <script src="index.js"></script>
+      </div>
 
-    <div id="controlPanel">
-      <button type="button" onclick="setServer(null)">set</button> <br />
-      <button type="button" onclick="startBot(null)">start</button>
-      <button type="button" onclick="stopBot(null)">stop</button><br />
-      <button type="button" onclick="startWebSocket()">open</button>
-      <button type="button" onclick="closeWebSocket()">close</button><br />
-      <button type="button" onclick="getCoords(null)">Coords</button>
+      <div id="controlPanel">
+        <div class="button-group inline">
+          <button type="button" onclick="setServer(null)">set</button>
+        </div>
+        <div class="button-group inline">
+          <button type="button" onclick="startBot(null)">start</button>
+          <button type="button" onclick="stopBot(null)">stop</button>
+        </div>
+        <div class="button-group inline">
+          <button type="button" onclick="startWebSocket()">open</button>
+          <button type="button" onclick="closeWebSocket()">close</button>
+        </div>
+        <div class="button-group inline">
+          <button type="button" onclick="getCoords(null)">Coords</button>
+        </div>
+      </div>
     </div>
   </body>
 </html>
