@@ -46,16 +46,24 @@ div {
   margin: 1em 0;
 }
 
+.status {
+  padding: 0.2em;
+  margin: 0.1em;
+
+  border-radius: 5%;
+}
+
 .success {
+  padding: 0.2em;
+
   background-color: var(--color--success);
-  
   color: #fff;
 }
 
 .warning {
-  background-color: var(--color--warning);
+  padding: 0.2em;
 
-  
+  background-color: var(--color--warning);
   color: #fff;
 }
 

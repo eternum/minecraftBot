@@ -18,11 +18,11 @@
       <div class="inline">
         <p>
           <span class="emphasis">Server:</span>
-          <span id="serverStatus">Offline</span>
+          <span id="serverStatus" class="status">Offline</span>
         </p>
         <p>
           <span class="emphasis">Bot:</span>
-          <span id="botStatus">Disconnected</span>
+          <span id="botStatus" class="status">Disconnected</span>
         </p>
       </div>
       <h2 id="coords">no cords</h2>
@@ -46,17 +46,43 @@
           <button type="button" onclick="setServer(null)">set</button>
         </div>
         <div class="button-group inline">
-          <button type="button" onclick="startBot(null)" class="success">start</button>
-          <button type="button" onclick="stopBot(null)" class="warning">stop</button>
+          <button type="button" onclick="startBot(null)" class="success">
+            start
+          </button>
+          <button type="button" onclick="stopBot(null)" class="warning">
+            stop
+          </button>
         </div>
         <div class="button-group inline">
-          <button type="button" onclick="startWebSocket()" class="success">open</button>
-          <button type="button" onclick="closeWebSocket()" class="warning">close</button>
+          <button type="button" onclick="startWebSocket()" class="success">
+            open
+          </button>
+          <button type="button" onclick="closeWebSocket()" class="warning">
+            close
+          </button>
         </div>
         <div class="button-group inline">
           <button type="button" onclick="getCoords(null)">coords</button>
         </div>
       </div>
     </div>
+    <script>
+      const serverStatus = document.getElementById('serverStatus');
+      const botStatus = document.getElementById('botStatus');
+
+      if (serverStatus.innerHTML == 'Offline') {
+        serverStatus.classList.add('warning');
+      }
+      if (botStatus.innerHTML == 'Disconnected') {
+        botStatus.classList.add('warning');
+      }
+
+      if (serverStatus.innerHTML == 'Online') {
+        serverStatus.classList.add('success');
+      }
+      if (botStatus.innerHTML == 'Connected') {
+        botStatus.classList.add('success');
+      }
+    </script>
   </body>
 </html>
