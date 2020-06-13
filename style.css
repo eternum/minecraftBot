@@ -30,6 +30,8 @@ body {
 }
 
 h1 {
+  margin-bottom: 0.5em;
+
   font-family: 'Lora', serif;
   font-size: 5em;
 
@@ -44,7 +46,7 @@ div {
   margin: 1em 0;
 }
 
-.bold {
+.emphasis {
   font-weight: bold;
 }
 
@@ -52,7 +54,13 @@ div {
   display: flex;
 
   text-align: center;
-  justify-content: space-between;
+  justify-content: space-around;
+}
+
+input {
+  border: none;
+
+  border-bottom: 1px var(--color--primary) solid;
 }
 
 #controlPanel {
