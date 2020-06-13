@@ -77,6 +77,10 @@
       if (botStatus.innerHTML == 'Disconnected') {
         botStatus.classList.add('warning');
       }
+      
+      if (botStatus.innerHTML == 'loading') {
+        botStatus.classList.remove('warning');
+      }
 
       if (serverStatus.innerHTML == 'Online') {
         serverStatus.classList.add('success');
