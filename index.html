@@ -69,6 +69,7 @@
     <script>
       const serverStatus = document.getElementById('serverStatus');
       const botStatus = document.getElementById('botStatus');
+      const coords = document.getElementById('coords');
 
       if (serverStatus.innerHTML == 'Offline') {
         serverStatus.classList.add('warning');
@@ -82,6 +83,10 @@
       }
       if (botStatus.innerHTML == 'Connected') {
         botStatus.classList.add('success');
+      }
+
+      if (coords.innerHTML == 'no cords') {
+        coords.innerHTML = '';
       }
     </script>
   </body>
