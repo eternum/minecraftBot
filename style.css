@@ -2,8 +2,8 @@
   --color--primary: #3b8ea5;
   --color--secondary: #2d728f;
   --color--bg: #fff;
-  --color--warning: #cc3600;
   --color--success: #26cf86;
+  --color--warning: #cc3600;
   --color--gold: #eca72c;
 }
 
@@ -46,6 +46,19 @@ div {
   margin: 1em 0;
 }
 
+.success {
+  background-color: var(--color--success);
+  
+  color: #fff;
+}
+
+.warning {
+  background-color: var(--color--warning);
+
+  
+  color: #fff;
+}
+
 .emphasis {
   font-weight: bold;
 }
@@ -58,9 +71,13 @@ div {
 }
 
 input {
+  /* To clear default styling */
   border: none;
 
   border-bottom: 1px var(--color--primary) solid;
+  color: var(--color--secondary);
+
+  text-align: center;
 }
 
 #controlPanel {
@@ -68,10 +85,21 @@ input {
 }
 
 .button-group {
-  margin: 1em 0;
+  margin: 0.5em 0;
   justify-content: center;
 }
 
 button {
-  margin: 0 1em;
+  margin: 0 0.5em;
+
+  /* To clear default styling */
+  border: none;
+  background-color: var(--color--bg);
+
+  color: var(--color--primary);
+  font-size: 1rem;
+
+  padding: 0.1em 0.4em;
+  border: 2px solid var(--color--primary);
+  border-radius: 10%;
 }
