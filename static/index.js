@@ -2,43 +2,67 @@
 const url = "http://0.0.0.0";
 var connected = false;
 
-function say(botId, message) {
+function say(message) {
   send({
     action: "say",
-    botId: botId,
+    botId: getCurrentBot(),
     message: message,
   });
 }
-function setServer(botId, address, port) {
+function setServer(address, port) {
   var address = document.getElementById("server").value;
   var port = document.getElementById("port").value;
   var data = { address: address, port: port };
 
   send({
     action: "setServer",
-    botId: botId,
+    botId: getCurrentBot(),
     data: data,
   });
 }
-function stopBot(botId) {
+function stopBot() {
   send({
     action: "stop",
-    botId: botId,
+    botId: getCurrentBot(),
   });
 }
-function startBot(botId) {
+function startBot() {
   send({
     action: "start",
-    botId: botId,
+    botId: getCurrentBot(),
   });
 }
-function getCoords(botId) {
+function getCoords() {
   if (connected) {
     send({
       action: "getCoords",
-      botId: botId,
+      botId: getCurrentBot(),
     });
   }
+}
+function getHealth() {
+  if (connected) {
+    send({
+      action: "getHealth",
+      botId: getCurrentBot(),
+    });
+  }
+}
+function getHunger() {
+  if (connected) {
+    send({
+      action: "getHunger",
+      botId: getCurrentBot(),
+    });
+  }
+}
+
+document.getElementById("botSelected").onchange = function (event) {
+  console.log(getCurrentBot());
+};
+
+function getCurrentBot() {
+  return document.getElementById("botSelected").value;
 }
 
 function listenSocket() {
@@ -48,7 +72,16 @@ function listenSocket() {
   };
   socketserver.onmessage = function (event) {
     console.log(event.data);
-    document.getElementById("coords").innerHTML = event.data;
+    var message = JSON.parse(event.data);
+    switch (message.action) {
+      case "coords":
+        document.getElementById("coords").innerHTML = message.data;
+      case "health":
+        document.getElementById("health").innerHTML = message.data;
+      case "hunger":
+        document.getElementById("hunger").innerHTML = message.data;
+      case "started":
+    }
   };
 }
 

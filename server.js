@@ -9,14 +9,30 @@ const mineflayer = require("mineflayer");
 
 const port = 3000;
 const host = "127.0.0.1";
-const program = path.resolve("bot.js");
+const program = "bot.js";
 
 let bots = new Map();
+let sockets = new Map();
 var json = null;
 var wsConnection = null;
 var bot = null;
 var mcAddress = "mc.hackclub.com";
 var mcPort = 25565;
+
+// initialize bot class
+
+class bot {
+  botId;
+  process;
+  socket;
+  constructor(botId) {
+    this.botId = botId;
+  }
+
+  send(message) {
+    this.socket.write(message);
+  }
+}
 
 // initialize http server
 console.log("starting server");
@@ -95,10 +111,21 @@ netServer.listen("/tmp/mineflayer.sock", () => {
   console.log("server bound");
 });
 
-function start(botId, host, port, username, password) {
+function start(botId) {
   console.log("[INFO]: New Bot created and started");
-  const test = child.execFile(program);
-  bots.set(botId, test);
+  const botProcess = child.execFile(
+    "node",
+    ["bot.js", botId],
+    (error, stdout, stderr) => {
+      if (error) {
+        throw error;
+      }
+      console.log(stdout);
+    }
+  );
+  bot = new bot(botId);
+  bot.process = botProcess;
+  bots.set(botId, bot);
 
   /*
   bot = mineflayer.createBot({
@@ -111,11 +138,7 @@ function start(botId, host, port, username, password) {
   */
 }
 
-function stop() {
-  bot.chat("/a");
-  bot.chat("/nick nickbot");
-  bot.quit();
-}
+function stop(botId) {}
 
 const wss = new WebSocket.Server({ server });
 
@@ -129,26 +152,24 @@ wss.on("connection", function connection(ws, req) {
   ws.on("message", function incoming(message) {
     var data = JSON.parse(message);
     var action = data.action;
+    var botId = parseInt(data.botId);
     switch (action) {
-      case "status":
-        sendCoordinates(ws);
-        sendStatus(ws);
-      case "getCoords":
-        sendCoordinates(ws);
-        break;
-      case "say":
-        console.log("[INFO]: " + data.message);
-        bot.chat(data.message);
-        break;
-      case "start":
-        start(mcAddress, mcPort);
-        break;
-      case "stop":
-        start(mcAddress, mcPort);
-        break;
       case "setServer":
         mcAddress = data.data.address;
         mcPort = data.data.port;
+        console.log(mcAddress + ":" + mcPort);
+        break;
+      case "start":
+        if (botId != 0) start(botId, mcAddress, mcPort);
+        break;
+      case "stop":
+        if (botId != 0) stop(botId);
+        break;
+      default:
+        console.log(action);
+        if (bots.has(botId)) {
+          bots.get(botId).send(message);
+        }
     }
 
     console.log("[INFO]: received: %s", message);
@@ -170,30 +191,28 @@ wss.on("connection", function connection(ws, req) {
 netServer.on("connection", (socket) => {
   socket.on("data", (data) => {
     console.log(data);
-    //var message = JSON.parse(data);
+    var message = JSON.parse(data);
+    console.log(message);
+
+    switch (message.action) {
+      case "started":
+        if (bots.has(message.botId)) {
+          if (bots.get(message.botId).socket == null) {
+            bots.get(message.botId).socket = socket;
+          }
+        }
+        broadcast(message);
+        break;
+      case "stopped":
+        break;
+      default:
+        broadcast(message);
+    }
   });
 });
 
-function sendCoordinates(ws) {
-  if (bot != null) {
-    var position = bot.entity.position;
-
-    json = { x: position.x, y: position.y, z: position.z };
-    ws.send(JSON.stringify(json));
-  }
-}
-
-function sendStatus(ws) {}
-
 // this is where the bot listeners go
-
 function listen() {
-  bot.on("login", () => {
-    console.log("[INFO]: Bot Logged in to server");
-    bot.chat("/nick nickbot [BOT]");
-    bot.chat("/a");
-  });
-
   bot.on("chat", (username, message) => {
     var data = {
       action: "chat",
