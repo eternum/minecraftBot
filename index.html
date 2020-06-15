@@ -1,47 +1,141 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="static/style.css" />
+    <link rel="stylesheet" href="static/bootstrap.css" />
+
     <link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
-    <link rel="stylesheet" href="bootstrap.min.css" />
 
     <script src="node_modules/xterm/lib/xterm.js"></script>
   </head>
   <body>
-    <div>
-      <div class="status">
-        <div class="well well-sm">
-          <h5>
-            Server:
-            <span id="serverStatus" class="label label-danger">Offline</span>
-          </h5>
-          <h5>
-            Bot:
-            <span id="botStatus" class="label label-danger">Disconnected</span>
-          </h5>
+    <div class="header">
+      <div class="page-header">
+        <h1>Bot Controller <small>controls mineflayer bots</small></h1>
+        <div class="botSelector" style="width: 200px;">
+          <select>
+            <option value="0">Select bot:</option>
+            <option value="1">Boomer</option>
+            <option value="2">nickbot</option>
+          </select>
+        </div>
+        <div class="status">
+          <div class="well well-sm">
+            <h5>
+              Server:
+              <span id="serverStatus" class="label label-danger">Offline</span>
+            </h5>
+            <h5>
+              Bot:
+              <span id="botStatus" class="label label-danger"
+                >Disconnected</span
+              >
+            </h5>
+          </div>
         </div>
       </div>
-      <h1>Bot controller</h1>
-      <h2 id="coords">no cords</h2>
+    </div>
 
-      <div id="input">
-        <p>
-          Server: <input type="string" value="mc.hackclub.com" id="server" />
-        </p>
-        <p>Port: <input type="number" value="25565" id="port" /></p>
-      </div>
-      <div id="terminal">
-        <script src="index.js"></script>
-      </div>
+    <div class="flex-container">
+      <div class="botStatus">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Bot Controls</h3>
+          </div>
+          <div class="panel-body">
+            <div class="btn-group">
+              <button
+                type="button"
+                onclick="startBot(null)"
+                class="btn btn-success"
+              >
+                start
+              </button>
+              <button
+                type="button"
+                onclick="stopBot(null)"
+                class="btn btn-danger"
+              >
+                stop
+              </button>
+            </div>
+            <br />
+            <div class="btn-group">
+              <button
+                type="button"
+                onclick="startWebSocket()"
+                class="btn btn-success"
+              >
+                open
+              </button>
+              <button
+                type="button"
+                onclick="closeWebSocket()"
+                class="btn btn-danger"
+              >
+                close
+              </button>
+            </div>
+            <button type="button" onclick="setServer(null)">set</button>
 
-      <div id="controlPanel">
-        <button type="button" onclick="setServer(null)">set</button> <br />
-        <button type="button" onclick="startBot(null)">start</button>
-        <button type="button" onclick="stopBot(null)">stop</button><br />
-        <button type="button" onclick="startWebSocket()">open</button>
-        <button type="button" onclick="closeWebSocket()">close</button><br />
-        <button type="button" onclick="getCoords(null)">Coords</button>
+            <button type="button" onclick="startWebSocket()">open</button>
+            <button type="button" onclick="closeWebSocket()">close</button
+            ><br />
+            <button type="button" onclick="getCoords(null)">Coords</button>
+          </div>
+        </div>
       </div>
+      <div class="botStatus">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Bot Settings</h3>
+          </div>
+          <div class="panel-body">
+            <form role="form">
+              <div class="form-group">
+                <label>Server address</label>
+                <input
+                  type="url"
+                  class="form-control"
+                  id="server"
+                  placeholder="mc.hackclub.com"
+                />
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Port</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="port"
+                  placeholder="25565"
+                />
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="botStatus">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Bot Status</h3>
+          </div>
+          <div class="panel-body">
+            <span>Coordinates:</span>
+
+            <span id="xcoord" class="label label-primary">0 0 0</span><br />
+
+            <span>Health: </span>
+            <span id="xcoord" class="label label-success">20</span><br />
+            <span>Hunger: </span>
+            <span id="xcoord" class="label label-primary">20</span><br />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="terminal">
+      <script src="static/index.js"></script>
     </div>
   </body>
 </html>

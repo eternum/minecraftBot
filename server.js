@@ -1,90 +1,114 @@
-const mineflayer = require("mineflayer");
 const http = require("http");
+const fs = require("fs");
+const child = require("child_process");
+const path = require("path");
+const net = require("net");
 const WebSocket = require("ws");
-
+const mineflayer = require("mineflayer");
 // env constants
+
 const port = 3000;
-const host = "192.168.7.235";
+const host = "127.0.0.1";
+const program = path.resolve("bot.js");
 
-const username = "noybzero@gmail.com";
-const password = "jdxWW6ZQ!iZWYXm9g8*G";
-
+let bots = new Map();
 var json = null;
 var wsConnection = null;
 var bot = null;
 var mcAddress = "mc.hackclub.com";
 var mcPort = 25565;
 
-// initialize server
+// initialize http server
 console.log("starting server");
 const server = http.createServer(function (request, response) {
   switch (request.method) {
-    case "POST":
-      console.log("POST");
-      var body = "";
-      request.on("data", function (data) {
-        body += data;
-        if (body == "start") {
-          console.log("starting");
+    case "GET": // this entire section serves the static website
+      var file = ""; // blanks file path for each request
+      var fileType = ""; // blanks file type for each request
 
-          start(json.address, json.port);
-        } else if (body == "stop") {
-          console.log("stopping");
+      // "/" is the request for the root file. in this case it is html
+      if (request.url == "/") {
+        file = "index.html";
+        fileType = "text/html";
 
-          stop();
-        } else {
-          json = JSON.parse(data);
+        // checks against regex for .js extension
+      } else if (request.url.match(".*.(js)")) {
+        file = request.url.substring(1); // here we remove the firs character in the request string which is a "/". this is done because fs gets mad if you dont
+        fileType = "application/javascript"; // this sets the fileType to javascript
 
-          console.log(JSON.parse(data));
-        }
-      });
-      request.on("end", function () {
-        response.writeHead(200, {
-          "Content-Type": "text/html",
-          "Access-Control-Allow-Headers": "*",
-          "Access-Control-Allow-Origin": "*",
+        // checks against regex for .css extension
+      } else if (request.url.match(".*.(css)")) {
+        file = request.url.substring(1); // look at comment above
+        fileType = "text/css"; // sets fileType to css for headers
+      }
+
+      // makes sure file isnt blank and doesnt throw errors
+      if (file != "") {
+        fs.readFile(file, (err, data) => {
+          // error handler
+          if (err) {
+            var message = "[ERROR]: " + err;
+            console.log(message); // logs error message to console
+            return404(response); // sends a 404 resource not found to the client
+          } else {
+            // writes a success header
+            response.writeHead(200, {
+              "Content-Type": fileType, // adds content type
+              "Access-Control-Allow-Headers": "*", // for getting around cors rules
+              "Access-Control-Allow-Origin": "*",
+            });
+            response.end(data); // ends the response and sends the data from the file
+          }
         });
-        response.end("post received");
-      });
-      break;
-    case "OPTIONS":
-      response.writeHead(200, {
-        "Access-Control-Allow-Headers": "*",
 
-        "Access-Control-Allow-Origin": "*",
-      });
-      response.end();
-      break;
-    case "GET":
-      response.writeHead(200, {
-        "Content-Type": "text/html",
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Allow-Origin": "*",
-      });
-      response.end("Hi There.");
-      break;
+        break;
+      }
+
     default:
-      response.writeHead(404, {
-        "Content-Type": "text/html",
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Allow-Origin": "*",
-      });
-      response.end("resource not found");
+      return404(response);
   }
 });
-// set server listen ports
-server.listen(port, host);
-console.log("[INFO]: server listening at: " + host + "\r\n at: " + port);
 
-function start(host, port) {
+function return404(response) {
+  response.writeHead(404, {
+    "Content-Type": "text/html",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Origin": "*",
+  });
+  response.end("resource not found");
+}
+
+// set http server listen ports
+server.listen(port, host);
+console.log("[INFO]: http server listening at: " + host + "\r\n at: " + port);
+
+netServer = net.createServer((c) => {
+  // 'connection' listener.
+  console.log("client connected");
+  c.on("end", () => {
+    console.log("client disconnected");
+  });
+});
+
+// set net server listen ports
+netServer.listen("/tmp/mineflayer.sock", () => {
+  console.log("server bound");
+});
+
+function start(botId, host, port, username, password) {
   console.log("[INFO]: New Bot created and started");
+  const test = child.execFile(program);
+  bots.set(botId, test);
+
+  /*
   bot = mineflayer.createBot({
     host: host,
-    port: parseInt(port),
+    port: port,
     username: username,
     password: password,
   });
   listen();
+  */
 }
 
 function stop() {
@@ -139,6 +163,14 @@ wss.on("connection", function connection(ws, req) {
         " " +
         reason
     );
+    netServer.close().then(process.exit());
+  });
+});
+
+netServer.on("connection", (socket) => {
+  socket.on("data", (data) => {
+    console.log(data);
+    //var message = JSON.parse(data);
   });
 });
 
@@ -151,7 +183,7 @@ function sendCoordinates(ws) {
   }
 }
 
-function sendStatus(ws)
+function sendStatus(ws) {}
 
 // this is where the bot listeners go
 

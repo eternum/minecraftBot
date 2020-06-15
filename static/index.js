@@ -1,5 +1,5 @@
 /// WebSocket And stuff
-const url = "http://bots.nswanson.com";
+const url = "http://0.0.0.0";
 var connected = false;
 
 function say(botId, message) {
@@ -21,16 +21,12 @@ function setServer(botId, address, port) {
   });
 }
 function stopBot(botId) {
-  document.getElementById("botStatus").class = "label label-danger";
-  document.getElementById("botStatus").innerHTML = "Disconnected";
   send({
     action: "stop",
     botId: botId,
   });
 }
 function startBot(botId) {
-  document.getElementById("botStatus").class = "label label-info";
-  document.getElementById("botStatus").innerHTML = "loading";
   send({
     action: "start",
     botId: botId,
@@ -47,27 +43,12 @@ function getCoords(botId) {
 
 function listenSocket() {
   socketserver.onopen = function (event) {
-    document.getElementById("serverStatus").class = "label label-success";
-    document.getElementById("serverStatus").innerHTML = "Online";
     console.log("connected");
     connected = true;
   };
   socketserver.onmessage = function (event) {
-    var data = JSON.parse(event.data);
-    switch (data.action) {
-      case "chat":
-        term.writeln(data.message);
-        prompt(term);
-      case "coords":
-        document.getElementById("coords").innerHTML = event.data;
-    }
     console.log(event.data);
-  };
-  socketserver.onclose = function (event) {
-    document.getElementById("serverStatus").class = "label label-danger";
-    document.getElementById("serverStatus").style.backgroundColor = "#CA3C3C";
-    document.getElementById("serverStatus").innerHTML = "Offline";
-    connected = false;
+    document.getElementById("coords").innerHTML = event.data;
   };
 }
 
@@ -78,18 +59,15 @@ botId:
 
 */
 function send(message) {
-  console.log(message);
+  JSON.stringify(message);
   socketserver.send(JSON.stringify(message));
 }
 
 function closeWebSocket() {
-  document.getElementById("serverStatus").class = "label label-danger";
-  document.getElementById("serverStatus").innerHTML = "Offline";
-
   socketserver.close();
 }
 function startWebSocket() {
-  socketserver = new WebSocket("ws://192.168.7.235:3000", "protocolOne");
+  socketserver = new WebSocket("ws://0.0.0.0:3000", "protocolOne");
   listenSocket();
 }
 
