@@ -163,3 +163,8 @@ function prompt(term) {
 
 runFakeTerminal();
 startWebSocket();
+
+function toggleTheme() {
+  var theme = document.body;
+  theme.classList.toggle("dark-body");
+}

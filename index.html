@@ -8,7 +8,7 @@
 
     <script src="node_modules/xterm/lib/xterm.js"></script>
   </head>
-  <body>
+  <body class="dark-body">
     <div class="header">
       <div class="page-header">
         <h1>Bot Controller <small>controls mineflayer bots</small></h1>
@@ -18,6 +18,12 @@
             <option value="1">Boomer</option>
             <option value="2">nickbot</option>
           </select>
+        </div>
+        <div class="toggle-dark" style="width: 100px;">
+          <div class="toggle">
+            <input type="button" class="btn btn-primary" value="toggle theme" onclick="toggleTheme();">
+            <label for="toggle"></label>
+          </div>
         </div>
         <div class="status">
           <div class="well well-sm">
@@ -93,7 +99,7 @@
           <div class="panel-body">
             <form role="form">
               <div class="form-group">
-                <label>Server address</label>
+                <label class="dark-text">Server address</label>
                 <input
                   type="url"
                   class="form-control"
@@ -102,7 +108,7 @@
                 />
               </div>
               <div class="form-group">
-                <label for="exampleInputPassword1">Port</label>
+                <label for="exampleInputPassword1" class="dark-text">Port</label>
                 <input
                   type="number"
                   class="form-control"
@@ -121,14 +127,14 @@
             <h3 class="panel-title">Bot Status</h3>
           </div>
           <div class="panel-body">
-            <span>Coordinates:</span>
+            <span class="dark-text">Coordinates:</span>
 
             <span id="xcoord" class="label label-primary">0 0 0</span><br />
 
-            <span>Health: </span>
-            <span id="xcoord" class="label label-success">20</span><br />
-            <span>Hunger: </span>
-            <span id="xcoord" class="label label-primary">20</span><br />
+            <span class="dark-text">Health: </span>
+            <span id="xcoord" class="label label-danger">20</span><br />
+            <span class="dark-text">Hunger: </span>
+            <span id="xcoord" class="label label-warning">20</span><br />
           </div>
         </div>
       </div>
