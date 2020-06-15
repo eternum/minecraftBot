@@ -34,3 +34,15 @@
 .header {
   margin: 20px;
 }
+
+.dark-body {
+    background-color: #23292D;
+}
+
+.panel-body {
+    background-color: #31363F;
+}
+
+.dark-text {
+    color: white;
+}
