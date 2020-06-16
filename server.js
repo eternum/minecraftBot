@@ -21,7 +21,7 @@ var mcPort = 25565;
 
 // initialize bot class
 
-class bot {
+class botData {
   botId;
   process;
   socket;
@@ -115,7 +115,7 @@ function start(botId) {
   console.log("[INFO]: New Bot created and started");
   const botProcess = child.execFile(
     "node",
-    ["bot.js", botId],
+    ["bot.js", botId, mcAddress, mcPort],
     (error, stdout, stderr) => {
       if (error) {
         throw error;
@@ -123,7 +123,7 @@ function start(botId) {
       console.log(stdout);
     }
   );
-  bot = new bot(botId);
+  var bot = new botData(botId);
   bot.process = botProcess;
   bots.set(botId, bot);
 
@@ -184,13 +184,13 @@ wss.on("connection", function connection(ws, req) {
         " " +
         reason
     );
-    netServer.close().then(process.exit());
   });
 });
 
 netServer.on("connection", (socket) => {
   socket.on("data", (data) => {
     console.log(data);
+
     var message = JSON.parse(data);
     console.log(message);
 

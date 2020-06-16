@@ -2,23 +2,16 @@ const mineflayer = require("mineflayer");
 const net = require("net");
 
 const botId = process.argv[2];
-const server = process.env.SERVER_ADDRESS;
-const port = process.env.SERVER_PORT;
-const username = process.env.USERNAME[botId]
-  ? process.env.USERNAME[botId]
-  : "chest";
-const password = process.env.PASSWORD[botId];
+const server = process.argv[3];
+const port = process.argv[4];
 
 const parent = net.connect("/tmp/mineflayer.sock");
-
-const server = "localhost";
-const port = 61012;
 
 bot = mineflayer.createBot({
   host: server,
   port: port,
-  username: username,
-  password: password,
+  username: "test",
+  password: null,
 });
 
 let mcData;
@@ -91,11 +84,17 @@ function sendStatus() {
 }
 function send(data) {
   parent.write(JSON.stringify(data));
+  parent.on("drain", () => {
+    return;
+  });
 }
 
 intitiateConnection(botId);
 
-bot.on("entityMoved", entityHandler);
+setTimeout(function () {
+  bot.on("entityMoved", entityHandler);
+}, 5000);
+
 bot.on("health", healthHandler);
 
 bot.on("login", () => {
@@ -115,5 +114,5 @@ function entityHandler(entity) {
 
 function healthHandler() {
   sendHealth();
-  sendHealth();
+  sendHunger();
 }

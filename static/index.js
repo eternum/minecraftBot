@@ -161,10 +161,18 @@ function prompt(term) {
   term.write("\r\n> ");
 }
 
-runFakeTerminal();
-startWebSocket();
-
 function toggleTheme() {
-  var theme = document.body;
-  theme.classList.toggle("dark-body");
+  document.body.classList.toggle("dark-body");
+  for (
+    let index = 0;
+    index < document.getElementsByClassName("card").length;
+    index++
+  ) {
+    document
+      .getElementsByClassName("card")
+      .item(index)
+      .classList.toggle("bg-dark");
+  }
 }
+
+startWebSocket();

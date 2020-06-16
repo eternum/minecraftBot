@@ -8,35 +8,34 @@
 
     <script src="node_modules/xterm/lib/xterm.js"></script>
   </head>
-  <body class="dark-body">
+  <body>
     <div class="header">
-      <div class="page-header">
-        <h1>Bot Controller <small>controls mineflayer bots</small></h1>
-        <div class="botSelector" style="width: 200px;">
-          <select id="botSelected">
-            <option value="0">Select bot:</option>
-            <option value="1">Boomer</option>
-            <option value="2">nickbot</option>
-          </select>
+      <h1>Bot Controller</h1>
+      <div class="botSelector" style="width: 200px;">
+        <select id="botSelected" class="custom-select">
+          <option value="0">Select bot:</option>
+          <option value="1">Boomer</option>
+          <option value="2">nickbot</option>
+        </select>
+      </div>
+      <div class="toggle-dark">
+        <div class="toggle">
+          <input
+            type="button"
+            class="btn btn-primary"
+            value="toggle theme"
+            onclick="toggleTheme();"
+          />
+          <label for="toggle"></label>
         </div>
-        <div class="toggle-dark" style="width: 100px;">
-          <div class="toggle">
-            <input type="button" class="btn btn-primary" value="toggle theme" onclick="toggleTheme();">
-            <label for="toggle"></label>
-          </div>
-        </div>
-        <div class="status">
-          <div class="well well-sm">
-            <h5>
-              Server:
-              <span id="serverStatus" class="label label-danger">Offline</span>
-            </h5>
-            <h5>
-              Bot:
-              <span id="botStatus" class="label label-danger"
-                >Disconnected</span
-              >
-            </h5>
+      </div>
+      <div class="status">
+        <div class="card bg-light">
+          <div class="card-header">
+            Server:
+            <span id="serverStatus" class="badge badge-danger">Offline</span>
+            Bot:
+            <span id="botStatus" class="badge badge-danger">Disconnected</span>
           </div>
         </div>
       </div>
@@ -44,71 +43,82 @@
 
     <div class="flex-container">
       <div class="botStatus">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Bot Controls</h3>
+        <div class="card bg-light">
+          <div class="card-header">
+            <h3 class="card-title">Bot Controls</h3>
           </div>
-          <div class="panel-body">
-            <div class="btn-group">
-              <button
-                type="button"
-                onclick="startBot(null)"
-                class="btn btn-success"
-              >
-                start
-              </button>
-              <button
-                type="button"
-                onclick="stopBot(null)"
-                class="btn btn-danger"
-              >
-                stop
-              </button>
-            </div>
-            <br />
-            <div class="btn-group">
-              <button
-                type="button"
-                onclick="startWebSocket()"
-                class="btn btn-success"
-              >
-                open
-              </button>
-              <button
-                type="button"
-                onclick="closeWebSocket()"
-                class="btn btn-danger"
-              >
-                close
-              </button>
-            </div>
-            <button type="button" onclick="setServer(null)">set</button>
+          <div class="card-body">
+            <h6>Bot:</h6>
+            <button
+              type="button"
+              onclick="startBot(null)"
+              class="btn btn-success"
+            >
+              start
+            </button>
+            <button
+              type="button"
+              onclick="stopBot(null)"
+              class="btn btn-outline-danger"
+            >
+              stop
+            </button>
+            <h6 class="mt-4">Websocket:</h6>
+            <button
+              type="button"
+              onclick="startWebSocket()"
+              class="btn btn-success"
+            >
+              open
+            </button>
+            <button
+              type="button"
+              onclick="closeWebSocket()"
+              class="btn btn-outline-danger"
+            >
+              close
+            </button>
+          </div>
+        </div>
+      </div>
 
-            <button type="button" onclick="startWebSocket()">open</button>
-            <button type="button" onclick="closeWebSocket()">close</button
-            ><br />
-            <button type="button" onclick="getCoords(null)">Coords</button>
+      <div class="botStatus">
+        <div class="card bg-light">
+          <div class="card-header">
+            <h3 class="card-title">Bot Status</h3>
+          </div>
+          <div class="card-body">
+            <span class="dark-text">Coordinates:</span>
+
+            <span id="coords" class="badge badge-primary">0 0 0</span><br />
+
+            <span class="dark-text">Health: </span>
+            <span id="health" class="badge badge-danger">20</span><br />
+            <span class="dark-text">Hunger: </span>
+            <span id="hunger" class="badge badge-warning">20</span><br />
           </div>
         </div>
       </div>
       <div class="botStatus">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Bot Settings</h3>
+        <div class="card bg-light">
+          <div class="card-header">
+            <h3 class="card-title">Bot Settings</h3>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
             <form role="form">
               <div class="form-group">
                 <label class="dark-text">Server address</label>
                 <input
-                  type="url"
+                  type="text"
                   class="form-control"
                   id="server"
                   placeholder="mc.hackclub.com"
                 />
               </div>
               <div class="form-group">
-                <label for="exampleInputPassword1" class="dark-text">Port</label>
+                <label for="exampleInputPassword1" class="dark-text"
+                  >Port</label
+                >
                 <input
                   type="number"
                   class="form-control"
@@ -116,25 +126,14 @@
                   placeholder="25565"
                 />
               </div>
-              <button type="submit" class="btn btn-default">Submit</button>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                onclick="setServer()"
+              >
+                Set
+              </button>
             </form>
-          </div>
-        </div>
-      </div>
-      <div class="botStatus">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Bot Status</h3>
-          </div>
-          <div class="panel-body">
-            <span class="dark-text">Coordinates:</span>
-
-            <span id="xcoord" class="label label-primary">0 0 0</span><br />
-
-            <span class="dark-text">Health: </span>
-            <span id="xcoord" class="label label-danger">20</span><br />
-            <span class="dark-text">Hunger: </span>
-            <span id="xcoord" class="label label-warning">20</span><br />
           </div>
         </div>
       </div>

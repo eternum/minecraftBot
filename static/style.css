@@ -2,18 +2,16 @@
   position: fixed;
   min-height: 5%;
   width: 140;
-  top: 10px;
-
   text-align: right;
   letter-spacing: 0px;
-  right: 10px;
+  right: 20px;
 }
 
 .botStatus {
   position: relative;
   max-width: 40%;
   min-width: 20%;
-  margin: 2.5%;
+  margin: 20px;
   margin-top: 0;
 }
 
@@ -23,27 +21,47 @@
   padding-left: 20px;
   padding-right: 20px;
 
-  margin: 0;
+  margin-top: 20px;
 }
 
 .botSelector {
-  position: absolute;
   right: 20%;
-  top: 60px;
+  margin-left: 40px;
+  margin-right: 20px;
+}
+
+.toggle-dark {
+  position: relative;
+  left: 20%;
 }
 
 .header {
-  margin: 20px;
+  display: flex;
+  background-color: #d6d8da;
+  color: inherit;
+  align-items: flex-end;
+  min-height: 88px;
+  padding: 15px;
 }
 
+.header h1 {
+  margin: 0;
+  color: #272c30;
+}
 .dark-body {
-    background-color: #23292D;
+  background-color: #272c30;
+  color: lightgray;
 }
 
-.panel-body {
-    background-color: #31363F;
+.dark-panel {
+  background-color: #35373b;
 }
 
-.dark-text {
-    color: white;
+.dark-well {
+  background-color: #505661;
+}
+
+[data-theme="dark-well"] {
+  background-color: #272c30 !important;
+  color: lightgray;
 }
