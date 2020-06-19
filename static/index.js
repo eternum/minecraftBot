@@ -1,12 +1,150 @@
 /// WebSocket And stuff
 const url = "http://0.0.0.0";
 var connected = false;
+var keys = { w: false, a: false, s: false, d: false, space: false };
+
+// listeners
+document.getElementById("botSelected").onchange = function (event) {
+  console.log(getCurrentBot());
+};
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+    var key = "";
+    const keyName = event.code;
+    switch (keyName) {
+      case "KeyW":
+        keys.w = true;
+        key = "forward";
+        break;
+      case "KeyA":
+        keys.a = true;
+        key = "right";
+        break;
+      case "KeyS":
+        keys.s = true;
+        key = "back";
+        break;
+      case "KeyD":
+        keys.d = true;
+        key = "left";
+        break;
+      case "Space":
+        keys.space = true;
+        key = "jump";
+        break;
+    }
+    if (key != "") {
+      keylogger(keys);
+      send({
+        action: "move",
+        botId: getCurrentBot(),
+        data: { operation: key, state: true },
+      });
+    }
+  },
+  false
+);
+
+document.addEventListener(
+  "keyup",
+  (event) => {
+    if (event.repeat) {
+      return;
+    }
+    const keyName = event.code;
+    switch (keyName) {
+      case "KeyW":
+        keys.w = false;
+        key = "forward";
+        break;
+      case "KeyA":
+        keys.a = false;
+        key = "right";
+        break;
+      case "KeyS":
+        keys.s = false;
+        key = "back";
+        break;
+      case "KeyD":
+        keys.d = false;
+        key = "left";
+        break;
+      case "Space":
+        keys.space = false;
+        key = "jump";
+        break;
+    }
+    if (key != "") {
+      keylogger(keys);
+      send({
+        action: "move",
+        botId: getCurrentBot(),
+        data: { operation: key, state: false },
+      });
+    }
+  },
+  false
+);
+
+// looks like a function but is actually just to trigger the listeners after the server is online
+function listenSocket() {
+  socketserver.onopen = function (event) {
+    console.log("connected");
+    connected = true;
+    serverOnline(true);
+  };
+  socketserver.onmessage = function (event) {
+    console.log(event.data);
+    var message = JSON.parse(event.data);
+    switch (message.action) {
+      case "coords":
+        setCoords();
+        break;
+      case "health":
+        setHealth();
+        break;
+      case "hunger":
+        document.getElementById("hunger").innerHTML = message.data;
+        break;
+      case "started":
+        botOnline(message.action);
+        break;
+    }
+  };
+  socketserver.onclose = function (event) {
+    console.log("connection closed");
+    serverOnline(false);
+  };
+}
+
+// functions
 
 function say(message) {
   send({
     action: "say",
     botId: getCurrentBot(),
     message: message,
+  });
+}
+function kill() {
+  send({
+    action: "kill",
+    botId: getCurrentBot(),
+  });
+}
+
+function place() {
+  send({
+    action: "place",
+    botId: getCurrentBot(),
+  });
+}
+function attack() {
+  send({
+    action: "attack",
+    botId: getCurrentBot(),
   });
 }
 function setServer(address, port) {
@@ -57,32 +195,19 @@ function getHunger() {
   }
 }
 
-document.getElementById("botSelected").onchange = function (event) {
-  console.log(getCurrentBot());
-};
+function setHunger(message) {
+  document.getElementById("hunger").innerHTML = message.data;
+}
+
+function setCoords(data) {
+  document.getElementById("hunger").innerHTML = message.data;
+}
+function setHealth(data) {
+  document.getElementById("hunger").innerHTML = message.data;
+}
 
 function getCurrentBot() {
   return document.getElementById("botSelected").value;
-}
-
-function listenSocket() {
-  socketserver.onopen = function (event) {
-    console.log("connected");
-    connected = true;
-  };
-  socketserver.onmessage = function (event) {
-    console.log(event.data);
-    var message = JSON.parse(event.data);
-    switch (message.action) {
-      case "coords":
-        document.getElementById("coords").innerHTML = message.data;
-      case "health":
-        document.getElementById("health").innerHTML = message.data;
-      case "hunger":
-        document.getElementById("hunger").innerHTML = message.data;
-      case "started":
-    }
-  };
 }
 
 /*
@@ -104,63 +229,6 @@ function startWebSocket() {
   listenSocket();
 }
 
-/// Terminal
-var term = new Terminal();
-var line = "";
-term.open(document.getElementById("terminal"));
-term.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ");
-
-function runFakeTerminal() {
-  if (term._initialized) {
-    return;
-  }
-
-  term._initialized = true;
-
-  term.prompt = () => {
-    term.write("\r\n$ ");
-  };
-
-  term.writeln("Welcome to xterm.js");
-  term.writeln(
-    "This is a local terminal emulation, without a real terminal in the back-end."
-  );
-  term.writeln("Type some keys and commands to play around.");
-  term.writeln("");
-  prompt(term);
-
-  term.onData((e) => {
-    switch (e) {
-      case "\r": // Enter
-        console.log(line);
-        say(null, line);
-      case "\u0003": // Ctrl+C
-        line = "";
-        prompt(term);
-        break;
-      case "\u007F": // Backspace (DEL)
-        // Do not delete the prompt
-        if (line.length > 0) {
-          line = line.substring(0, line.length - 1);
-        }
-        if (term._core.buffer.x > 2) {
-          term.write("\b \b");
-        }
-        break;
-      default:
-        line += e;
-
-        // Print all other characters for demo
-
-        term.write(e);
-    }
-  });
-}
-
-function prompt(term) {
-  term.write("\r\n> ");
-}
-
 function toggleTheme() {
   document.body.classList.toggle("dark-body");
   for (
@@ -175,4 +243,47 @@ function toggleTheme() {
   }
 }
 
-startWebSocket();
+function serverOnline(state) {
+  var status = document.getElementById("serverStatus");
+  if (state) {
+    status.setAttribute("class", "badge badge-success");
+    status.innerHTML = "Online";
+  } else {
+    status.setAttribute("class", "badge badge-danger");
+    status.innerHTML = "Offline";
+  }
+}
+function botOnline(state) {
+  var status = document.getElementById("botStatus");
+
+  switch (state) {
+    case "started":
+      status.setAttribute("class", "badge badge-success");
+      status.innerHTML = "Connected";
+      break;
+    case "stopped":
+      status.setAttribute("class", "badge badge-danger");
+      break;
+
+    case "starting":
+      status.setAttribute("class", "badge badge-primary");
+      status.innerHTML = "starting";
+  }
+}
+
+function keylogger(keys) {
+  if (keys.w) document.getElementById("w").classList.add("keypressed");
+  if (keys.a) document.getElementById("a").classList.add("keypressed");
+  if (keys.s) document.getElementById("s").classList.add("keypressed");
+  if (keys.d) document.getElementById("d").classList.add("keypressed");
+  if (keys.space)
+    document.getElementById("spacebar").classList.add("keypressed");
+  if (!keys.w) document.getElementById("w").classList.remove("keypressed");
+  if (!keys.a) document.getElementById("a").classList.remove("keypressed");
+  if (!keys.s) document.getElementById("s").classList.remove("keypressed");
+  if (!keys.d) document.getElementById("d").classList.remove("keypressed");
+  if (!keys.space)
+    document.getElementById("spacebar").classList.remove("keypressed");
+}
+
+setTimeout(() => startWebSocket(), 100);

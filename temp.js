@@ -1,22 +1,41 @@
 const http = require("http");
 const fs = require("fs");
 const child = require("child_process");
-const ipc = require("node-ipc");
+const path = require("path");
+const net = require("net");
 const WebSocket = require("ws");
+const mineflayer = require("mineflayer");
 // env constants
-
-ipc.config.id = "parent";
-ipc.config.retry = 1500;
-ipc.config.silent = true;
 
 const port = 3000;
 const host = "127.0.0.1";
-const socketPath = "/tmp/mineflayer.sock";
+const program = "bot.js";
 
 let bots = new Map();
 let sockets = new Map();
+var json = null;
+var wsConnection = null;
+var bot = null;
 var mcAddress = "mc.hackclub.com";
 var mcPort = 25565;
+
+// initialize bot class
+
+class botData {
+  botId;
+  process;
+  socket;
+  constructor(botId) {
+    this.botId = botId;
+  }
+  setSocket(socket) {
+    this.socket = socket;
+  }
+
+  send(message) {
+    this.socket.write(message);
+  }
+}
 
 // initialize http server
 console.log("starting server");
@@ -79,36 +98,25 @@ function return404(response) {
 }
 
 // set http server listen ports
-server.listen(port, host, () => {
-  console.log("[INFO]: http server listening at: " + host + ":" + port);
+server.listen(port, host);
+console.log("[INFO]: http server listening at: " + host + "\r\n at: " + port);
+
+netServer = net.createServer((c) => {
+  // 'connection' listener.
+  console.log("client connected");
+  c.on("end", () => {
+    console.log("client disconnected");
+  });
 });
 
-ipc.serve(socketPath, function () {
-  ipc.server.on("connect", () => {
-    console.log("Connected");
-  });
-
-  ipc.server.on("started", (data, socket) => {
-    if (!sockets.has(data.botId)) {
-      console.log("adding socket");
-      sockets.set(data.botId, socket);
-    }
-    console.log(data);
-    broadcast(data);
-  });
-
-  ipc.server.on("data", (data, socket) => {
-    broadcast(data);
-  });
-
-  ipc.server.on("socket.disconnected", function (socket, destroyedSocketID) {
-    ipc.log("client " + destroyedSocketID + " has disconnected!");
-  });
+// set net server listen ports
+netServer.listen("/tmp/mineflayer.sock", () => {
+  console.log("server bound");
 });
 
 function start(botId) {
   console.log("[INFO]: New Bot created and started");
-  var botProcess = child.execFile(
+  const botProcess = child.execFile(
     "node",
     ["bot.js", botId, mcAddress, mcPort],
     (error, stdout, stderr) => {
@@ -118,11 +126,9 @@ function start(botId) {
       console.log(stdout);
     }
   );
-  bots.set(botId, botProcess);
-
-  botProcess.on("exit", (code, signal) => {
-    console.log("child process exited code: " + code);
-  });
+  var bot = new botData(botId);
+  bot.process = botProcess;
+  bots.set(parseInt(botId), bot);
 
   /*
   bot = mineflayer.createBot({
@@ -145,10 +151,13 @@ server.on("close", function () {
 
 wss.on("connection", function connection(ws, req) {
   console.log("[INFO]: New Connection From: " + req.socket.remoteAddress);
+  wsConnection = ws;
   ws.on("message", function incoming(message) {
+    console.log("[INFO]: received: %s", message);
+
     var data = JSON.parse(message);
     var action = data.action;
-    var botId = data.botId;
+    var botId = parseInt(data.botId);
     switch (action) {
       case "setServer":
         mcAddress = data.data.address;
@@ -158,13 +167,10 @@ wss.on("connection", function connection(ws, req) {
       case "start":
         if (botId != 0) start(botId, mcAddress, mcPort);
         break;
-      case "kill":
-        bots.get(botId).kill("SIGHUP");
-        break;
       default:
-        if (sockets.has(botId)) {
-          var socket = sockets.get(botId);
-          sendToChild(socket, "data", data);
+        console.log(action);
+        if (bots.has(botId)) {
+          bots.get(botId).send(message);
         }
     }
   });
@@ -181,18 +187,27 @@ wss.on("connection", function connection(ws, req) {
   });
 });
 
-function ipcListen() {
-  ipc.server.on("connect", () => {
-    console.log("Connected");
+netServer.on("connection", (socket) => {
+  socket.on("data", (data) => {
+    socket.pause();
+    var message = JSON.parse(data);
+    switch (message.action) {
+      case "started":
+        if (bots.has(message.botId)) {
+          if (bots.get(message.botId).socket == null) {
+            console.log("adding socket");
+            bots.get(message.botId).setSocket(socket);
+          }
+        }
+        broadcast(message);
+        break;
+      case "stopped":
+        break;
+      default:
+        broadcast(message);
+    }
   });
-
-  ipc.server.on("started", (data, socket) => {
-    sockets.set(data.botId, socket);
-  });
-  ipc.server.on("data", (data, socket) => {
-    broadcast(data);
-  });
-}
+});
 
 function broadcast(message) {
   wss.clients.forEach(function each(client) {
@@ -201,9 +216,3 @@ function broadcast(message) {
     }
   });
 }
-
-function sendToChild(socket, event, data) {
-  ipc.server.emit(socket, event, data);
-}
-
-ipc.server.start();

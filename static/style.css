@@ -1,16 +1,64 @@
 .status {
-  position: fixed;
-  min-height: 5%;
-  width: 140;
-  text-align: right;
-  letter-spacing: 0px;
-  right: 20px;
 }
 
-.botStatus {
-  position: relative;
-  max-width: 40%;
-  min-width: 20%;
+.key {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  background: gray;
+}
+
+.spacebar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  height: 100px;
+  background: gray;
+}
+.keys {
+  margin: 50px;
+}
+.keypressed {
+  background: blue;
+}
+
+.alertHolder {
+  visibility: hidden;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  width: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.alert {
+  pointer-events: all;
+}
+
+.controlCard {
+  margin: 20px;
+  margin-top: 0;
+}
+
+.botHead {
+  display: flex;
+  max-width: 60%;
+}
+
+.botStartStop {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.botCard {
+  max-width: 100%;
+  min-width: 30%;
   margin: 20px;
   margin-top: 0;
 }
@@ -20,19 +68,14 @@
   flex-wrap: wrap;
   padding-left: 20px;
   padding-right: 20px;
-
+  flex-grow: 4;
   margin-top: 20px;
 }
 
 .botSelector {
-  right: 20%;
-  margin-left: 40px;
-  margin-right: 20px;
 }
 
 .toggle-dark {
-  position: relative;
-  left: 20%;
 }
 
 .header {
