@@ -1,4 +1,5 @@
 # minecraftBot
+
 MinecraftBot that replaces AFKing on a computer
 
 The goal of this bot was to emulate regular Minecraft AFKing using something like an auto-clicker.
