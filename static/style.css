@@ -5,24 +5,38 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100px;
-  height: 100px;
-  background: gray;
+  border-radius: 0.25rem;
+  min-height: 50px;
+  min-width: 50px;
+
+  border: 2px solid;
+  margin: 2.5px;
+  border-color: #007bff;
+  color: #007bff;
+  font-weight: 400;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.spacebar {
+.key-wide {
+  min-width: 160px;
+}
+
+.sprintStatus {
+  position: absolute;
+}
+
+.keys {
+  margin: 0px;
+}
+
+.keygrid {
   display: flex;
   justify-content: center;
-  align-items: center;
-  width: 300px;
-  height: 100px;
-  background: gray;
-}
-.keys {
-  margin: 50px;
 }
 .keypressed {
-  background: blue;
+  background: #007bff;
+  color: white;
 }
 
 .alertHolder {
@@ -61,6 +75,17 @@
   min-width: 30%;
   margin: 20px;
   margin-top: 0;
+}
+.loginPage {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.loginCard {
+  margin: auto;
 }
 
 .flex-container {
