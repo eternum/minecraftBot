@@ -1,54 +1,26 @@
 .status {
 }
 
-/* .keys {
+.key {
   display: flex;
-  flex-direction: column;
-}
-
-.letter-keys {
-  display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-
+  width: 100px;
+  height: 100px;
   background: gray;
-}
-
-.key {
-  margin: 1em;
 }
 
 .spacebar {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  width: 300px;
   height: 100px;
   background: gray;
-
-  margin: 1em;
-} */
-
-.keyboard {
-  display: flex;
-  flex-direction: column;
-
-  font-size: 2em;
 }
-
-.keyboard-row {
-  display: flex;
+.keys {
+  margin: 50px;
 }
-
-.keyboard-row *{
-  background-color: grey;
-  padding: 0.2em;
-}
-
-.letter-key {
-}
-
 .keypressed {
   background: blue;
 }
@@ -132,7 +104,7 @@
   background-color: #505661;
 }
 
-[data-theme='dark-well'] {
+[data-theme="dark-well"] {
   background-color: #272c30 !important;
   color: lightgray;
 }
