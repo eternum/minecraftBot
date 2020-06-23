@@ -3,9 +3,20 @@ require('dotenv').config()
 const { readFileSync: readFile } = require('fs')
 const mineflayer = require('mineflayer')
 const path = require('path');
-
+const fetch = require('node-fetch');
+const { send } = require('process');
 
 const users = JSON.parse(readFile(path.join(__dirname, 'users.json').toString()))
+
+const sendToSlack = async (msg) => {
+    await fetch(url = process.env.SLACK_URL, {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify({ text: msg })
+    });
+}
 
 const createBot = () =>
 	mineflayer.createBot({
@@ -19,7 +30,8 @@ const listen = bot => {
 	// Initial things when bot joins the server
 	bot.on('spawn', () => {
 		console.clear() // Clears the console to make the chat easier to read
-		console.log('Bot joined the server')
+        console.log('Bot joined the server')
+        sendToSlack('Bot joined the server');
 		
 		bot.chat('/nick Booomerr [BOT]')
 		bot.chat('/afk') // Sets the bot to AFK
@@ -31,7 +43,8 @@ const listen = bot => {
 			return // If the bot is whispering to itself
 		
 		if (users.includes(username) && message.includes('leave')) {
-			console.log(`${username} said to leave`)
+            console.log(`${username} said to leave`)
+            sendToSlack(`${username} said to leave`)
 			leave(bot)
 		}
 	})
@@ -47,9 +60,10 @@ const listen = bot => {
 	
 	bot.on('playerLeft', () => logPlayers('left', bot))
 	
-	bot.on('kicked', (reason, loggedIn) =>
-		console.log(`Kicked for ${reason} while ${loggedIn}`)
-	)
+	bot.on('kicked', (reason, loggedIn) => {
+        console.log(`Kicked for ${reason} while ${loggedIn}`);
+        sendToSlack(`Kicked for ${reason} while ${loggedIn}`);
+    })
 	
 	// Calls people out when bed is broken
 	bot.on('spawnReset', () => bot.chat('Who broke my bed'))
@@ -66,7 +80,8 @@ const logPlayers = (action, bot) => {
 
 const leave = bot => {
 	bot.quit()
-	console.log('Bot left the server')
+    console.log('Bot left the server')
+    sendToSlack('Bot left the server');
 }
 
 exports.createBot = createBot
