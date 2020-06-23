@@ -199,14 +199,11 @@ function setHunger(message) {
   document.getElementById("hunger").innerHTML = message.data;
 }
 
-function setCoords(message) {
-  var x = message.data.x.toFixed(1);
-  var y = message.data.y.toFixed(1);
-  var z = message.data.z.toFixed(1);
-  document.getElementById("coords").innerHTML = x + " " + y + " " + z;
+function setCoords(data) {
+  document.getElementById("hunger").innerHTML = message.data;
 }
-function setHealth(message) {
-  document.getElementById("health").innerHTML = message.data;
+function setHealth(data) {
+  document.getElementById("hunger").innerHTML = message.data;
 }
 
 function getCurrentBot() {

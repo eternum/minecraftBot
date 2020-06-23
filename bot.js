@@ -116,10 +116,6 @@ bot.on("login", () => {
   }, 1000);
 });
 
-bot.on("move", () => {
-  sendCoordinates();
-});
-
 function entityHandler(entity) {
   if (entity.type == "player") {
     var timeSince = Date.now() - lastEventTime;

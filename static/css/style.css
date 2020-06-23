@@ -1,42 +1,56 @@
 .status {
 }
 
+/* .keys {
+  display: flex;
+  flex-direction: column;
+}
+
+.letter-keys {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  background: gray;
+}
+
 .key {
+  margin: 1em;
+}
+
+.spacebar {
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 0.25rem;
-  min-height: 50px;
-  min-width: 50px;
+  width: 100%;
+  height: 100px;
+  background: gray;
 
-  border: 2px solid;
-  margin: 2.5px;
-  border-color: #007bff;
-  color: #007bff;
-  font-weight: 400;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
+  margin: 1em;
+} */
 
-.key-wide {
-  min-width: 160px;
-}
-
-.sprintStatus {
-  position: absolute;
-}
-
-.keys {
-  margin: 0px;
-}
-
-.keygrid {
+.keyboard {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+
+  font-size: 2em;
 }
+
+.keyboard-row {
+  display: flex;
+}
+
+.keyboard-row *{
+  background-color: grey;
+  padding: 0.2em;
+}
+
+.letter-key {
+}
+
 .keypressed {
-  background: #007bff;
-  color: white;
+  background: blue;
 }
 
 .alertHolder {
@@ -75,17 +89,6 @@
   min-width: 30%;
   margin: 20px;
   margin-top: 0;
-}
-.loginPage {
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  width: 100vw;
-  height: 100vh;
-}
-
-.loginCard {
-  margin: auto;
 }
 
 .flex-container {
@@ -129,7 +132,7 @@
   background-color: #505661;
 }
 
-[data-theme="dark-well"] {
+[data-theme='dark-well'] {
   background-color: #272c30 !important;
   color: lightgray;
 }
