@@ -5,7 +5,7 @@ const { createBot, listen, leave } = require('./utils')
 const app = express()
 let bot = null
 
-console.log(chalk.green('Starting...'))
+console.log('Starting...')
 
 app.post('/startbot', (_, res) => {
 	bot || listen(bot = createBot())

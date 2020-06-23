@@ -4,6 +4,7 @@ const { readFileSync: readFile } = require('fs')
 const mineflayer = require('mineflayer')
 const path = require('path');
 
+
 const users = JSON.parse(readFile(path.join(__dirname, 'users.json').toString()))
 
 const createBot = () =>
@@ -18,7 +19,7 @@ const listen = bot => {
 	// Initial things when bot joins the server
 	bot.on('spawn', () => {
 		console.clear() // Clears the console to make the chat easier to read
-		console.log(chalk.green('Bot joined the server'))
+		console.log('Bot joined the server')
 		
 		bot.chat('/nick Booomerr [BOT]')
 		bot.chat('/afk') // Sets the bot to AFK
@@ -30,7 +31,7 @@ const listen = bot => {
 			return // If the bot is whispering to itself
 		
 		if (users.includes(username) && message.includes('leave')) {
-			console.log(chalk.red(`${username} said to leave`))
+			console.log(`${username} said to leave`)
 			leave(bot)
 		}
 	})
@@ -47,7 +48,7 @@ const listen = bot => {
 	bot.on('playerLeft', () => logPlayers('left', bot))
 	
 	bot.on('kicked', (reason, loggedIn) =>
-		console.log(chalk.cyan(`Kicked for ${reason} while ${loggedIn}`))
+		console.log(`Kicked for ${reason} while ${loggedIn}`)
 	)
 	
 	// Calls people out when bed is broken
@@ -58,14 +59,14 @@ const listen = bot => {
 }
 
 const logPlayers = (action, bot) => {
-	console.log(chalk.yellow(
+	console.log(
 		`Someone ${action}: ${Object.keys(bot.players).join(', ')}`
-	))
+	)
 }
 
 const leave = bot => {
 	bot.quit()
-	console.log(chalk.red('Bot left the server'))
+	console.log('Bot left the server')
 }
 
 exports.createBot = createBot
