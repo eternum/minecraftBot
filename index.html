@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="static/style.css" />
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
@@ -26,6 +25,7 @@
       crossorigin="anonymous"
     ></script>
     <script src="node_modules/xterm/lib/xterm.js"></script>
+    <link rel="stylesheet" href="static/css/style.css" />
   </head>
 
   <body>
@@ -225,17 +225,28 @@
       </div>
     </div>
     <script src="static/index.js"></script>
-    <div class="keys">
-      <div class="row justify-content-center">
+    <!-- <div class="keys">
+      <div class="letter-keys">
         <span class="key" id="w">w</span>
-      </div>
-      <div class="row justify-content-center">
         <span class="key" id="a">a</span>
         <span class="key" id="s">s</span>
         <span class="key" id="d">d</span>
       </div>
-      <div class="row justify-content-center">
-        <span class="spacebar" id="spacebar">spacebar</span>
+      <div class="spacebar">
+        <p id="spacebar">spacebar</p>
+      </div>
+    </div> -->
+    <div class="keyboard">
+      <div class="keyboard-row keyboard-row1">
+        <p class="letter-key">w</p>
+      </div>
+      <div class="keyboard-row keyboard-row2">
+        <p class="letter-key">a</p>
+        <p class="letter-key">s</p>
+        <p class="letter-key">d</p>
+      </div>
+      <div class="keyboard-row keyboard-row3">
+        <p class="spacebar">spacebar</p>
       </div>
     </div>
   </body>
