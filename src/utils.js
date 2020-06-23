@@ -2,8 +2,9 @@ require('dotenv').config()
 
 const { readFileSync: readFile } = require('fs')
 const mineflayer = require('mineflayer')
+const path = require('path');
 
-const users = JSON.parse(readFile(join(__dirname, 'users.json').toString()))
+const users = JSON.parse(readFile(path.join(__dirname, 'users.json').toString()))
 
 const createBot = () =>
 	mineflayer.createBot({
