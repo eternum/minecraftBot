@@ -9,7 +9,7 @@ function initialize(passport, users) {
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: "http://mineflayer.cap.lukec.me/auth/github/callback",
+        callbackURL: process.env.CALLBACK_URL,
       },
       function (accessToken, refreshToken, profile, done) {
         process.nextTick(function () {

@@ -5,8 +5,8 @@ const v = require("vec3");
 const botId = process.argv[2];
 const server = process.argv[3];
 const port = process.argv[4];
-const username = process.argv[5];
-const password = process.argv[6];
+const username = process.argv[5] ? process.argv[5] : "bot_" + botId;
+const password = process.argv[6] ? process.argv[6] : null;
 
 ipc.config.id = "parent";
 ipc.config.appspace = "";
@@ -38,10 +38,8 @@ ipc.connectTo("parent", "/tmp/mineflayer.sock", function () {
         sendHunger;
         break;
       case "place":
-        bot.placeBlock(bot.blockInSight(), v(0, 1, 0));
         break;
       case "attack":
-        send("data", bot.controlState);
         break;
       case "move":
         move(data);
@@ -50,9 +48,7 @@ ipc.connectTo("parent", "/tmp/mineflayer.sock", function () {
   });
 });
 
-var lastEventTime = 0;
-
-bot = mineflayer.createBot({
+const bot = mineflayer.createBot({
   host: server,
   port: port,
   username: username,
@@ -73,8 +69,11 @@ function sendCoordinates() {
   if (bot != null) {
     var position = bot.entity.position;
 
-    var data = { x: position.x, y: position.y, z: position.z };
-    var json = { action: "coords", data: data, botId: botId };
+    var json = {
+      action: "coords",
+      data: { x: position.x, y: position.y, z: position.z },
+      botId: botId,
+    };
     send("data", json);
   }
 }
@@ -98,14 +97,11 @@ function sendHunger() {
 }
 function sendStatus() {
   sendCoordinates();
-  sendHealth();
-  sendHunger();
+  healthHandler();
 }
 function send(type, data) {
   parent.emit(type, data);
 }
-//bot.on("entityMoved", entityHandler);
-
 bot.on("health", healthHandler);
 
 bot.on("login", () => {
@@ -120,36 +116,17 @@ bot.on("move", () => {
   sendCoordinates();
 });
 
-function entityHandler(entity) {
-  if (entity.type == "player") {
-    var timeSince = Date.now() - lastEventTime;
-    if (timeSince >= 500) {
-      lastEventTime = Date.now();
-      var pos = entity.position;
-      var time = Date.now();
-      var data = { x: pos.x, y: pos.y, z: pos.z };
-      var json = {
-        action: "playerMove",
-        username: entity.username,
-        time: time,
-        timeSince: timeSince,
-        data: data,
-      };
-      send(json);
-    }
-  }
-}
-
 function healthHandler() {
   sendHealth();
   sendHunger();
 }
 
 function move(data) {
+  if (data == null) bot.clearControlStates();
   bot.setControlState(data.data.operation, data.data.state);
 }
 
 function stop() {
   bot.quit();
-  process.exit();
+  bot.on("end", () => process.exit());
 }

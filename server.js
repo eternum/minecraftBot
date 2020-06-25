@@ -26,14 +26,14 @@ ipc.config.id = "parent";
 ipc.config.retry = 1500;
 ipc.config.silent = true;
 
-const port = 3000;
-const host = "127.0.0.1";
-const socketPath = "/tmp/mineflayer.sock";
+const PORT = 3000;
+const HOST = "0.0.0.0";
+const SOCKET_PATH = "/tmp/mineflayer.sock";
 
-let bots = new Map();
-let sockets = new Map();
-var mcAddress = "mc.hackclub.com";
-var mcPort = 25565;
+var botProcesses = new Map();
+var sockets = new Map();
+var MC_ADDRESS = process.env.MC_ADDRESS;
+var MC_PORT = process.env.MC_PORT;
 
 // EXPRESS STUFF
 app.set("trust proxy", 1); // trust first proxy
@@ -147,11 +147,11 @@ function return404(response) {
 }
 
 // set http server listen ports
-server.listen(port, host, () => {
+server.listen(PORT, HOST, () => {
   console.log("[INFO]: http server listening at: " + host + ":" + port);
 });
 
-ipc.serve(socketPath, function () {
+ipc.serve(SOCKET_PATH, function () {
   ipc.server.on("connect", () => {
     console.log("Connected");
   });
@@ -176,11 +176,11 @@ ipc.serve(socketPath, function () {
 
 function start(botId) {
   console.log("[INFO]: New Bot created and started");
-  var username = botLogins[botId];
-  var password = botPasswords[botId];
+  var username = bots[botId].username;
+  var password = bots[botId].password;
   var botProcess = child.execFile(
     "node",
-    ["bot.js", botId, mcAddress, mcPort, username, password],
+    ["bot.js", botId, MC_ADDRESS, MC_PORT, username, password],
     (error, stdout, stderr) => {
       if (error) {
         throw error;
@@ -188,7 +188,7 @@ function start(botId) {
       console.log(stdout);
     }
   );
-  bots.set(botId, botProcess);
+  botProcesses.set(botId, botProcess);
 
   botProcess.on("exit", (code, signal) => {
     console.log("child process exited code: " + code);
@@ -211,15 +211,15 @@ wss.on("connection", function connection(ws, req) {
     var botId = data.botId;
     switch (action) {
       case "setServer":
-        mcAddress = data.data.address;
-        mcPort = data.data.port;
+        MC_ADDRESS = data.data.address;
+        MC_PORT = data.data.port;
         console.log(mcAddress + ":" + mcPort);
         break;
       case "start":
         if (botId != 0) start(botId, mcAddress, mcPort);
         break;
       case "kill":
-        bots.get(botId).kill("SIGHUP");
+        botProcesses.get(botId).kill("SIGHUP");
         break;
       default:
         if (sockets.has(botId)) {
