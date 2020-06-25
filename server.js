@@ -14,9 +14,9 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 
 // ENV VARS
-const users = process.env.USERS;
-const botLogins = process.env.BOT_LOGINS;
-const botPasswords = process.env.BOT_PASSWORDS;
+const users = process.env.USERS.split("|");
+const botLogins = process.env.BOT_LOGINS.split("|");
+const botPasswords = process.env.BOT_PASSWORDS.split("|");
 const sessionSecret = process.env.SESSION_SECRET;
 
 const initializePassport = require("./passport-config");
@@ -176,8 +176,8 @@ ipc.serve(socketPath, function () {
 
 function start(botId) {
   console.log("[INFO]: New Bot created and started");
-  var username = process.env.BOT_LOGINS[botId];
-  var password = process.env.BOT_PASSWORDS[botId];
+  var username = botLogins[botId];
+  var password = botPasswords[botId];
   var botProcess = child.execFile(
     "node",
     ["bot.js", botId, mcAddress, mcPort, username, password],
