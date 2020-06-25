@@ -17,15 +17,16 @@
   },
   "homepage": "https://github.com/eternum/minecraftBot#readme",
   "dependencies": {
-    "express": "4.17.1",
-    "node-ipc": "9.1.1",
-    "ws": "7.3.0",
-    "passport": "0.4.1",
-    "passport-github2": "0.1.12",
-    "express-session": "1.17.1",
     "cookie-parser": "1.4.5",
     "dotenv": "8.2.0",
+    "express": "4.17.1",
+    "express-session": "1.17.1",
+    "js-yaml": "^3.14.0",
+    "mineflayer": "2.22.0",
+    "node-ipc": "9.1.1",
+    "passport": "0.4.1",
+    "passport-github2": "0.1.12",
     "vec3": "0.1.5",
-    "mineflayer": "2.22.0"
+    "ws": "7.3.0"
   }
 }
