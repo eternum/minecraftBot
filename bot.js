@@ -112,10 +112,12 @@ bot.on("login", () => {
   intitiateConnection(botId);
   setTimeout(() => {
     sendStatus();
-
-    bot.chat("test");
     bot.chat("/a");
   }, 1000);
+});
+
+bot.on("move", () => {
+  sendCoordinates();
 });
 
 function entityHandler(entity) {

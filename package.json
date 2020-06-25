@@ -28,4 +28,28 @@
     "vec3": "0.1.5",
     "mineflayer": "2.22.0"
   }
+=======
+	"name": "minecraft-bot",
+	"version": "1.0.0",
+	"main": "src/index.js",
+	"scripts": {
+		"start": "node src"
+	},
+	"dependencies": {
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"mineflayer": "^2.15.0",
+		"node-fetch": "^2.6.0",
+		"path": "^0.12.7",
+		"vec3": "^0.1.4"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/saharshy29/minecraftBot.git"
+	},
+	"bugs": {
+		"url": "https://github.com/saharshy29/minecraftBot/issues"
+	},
+	"homepage": "https://github.com/saharshy29/minecraftBot#readme",
+	"private": true
 }
