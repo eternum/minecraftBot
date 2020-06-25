@@ -176,9 +176,11 @@ ipc.serve(socketPath, function () {
 
 function start(botId) {
   console.log("[INFO]: New Bot created and started");
+  var username = process.env.BOT_LOGINS[botId];
+  var password = process.env.BOT_PASSWORDS[botId];
   var botProcess = child.execFile(
     "node",
-    ["bot.js", botId, mcAddress, mcPort],
+    ["bot.js", botId, mcAddress, mcPort, username, password],
     (error, stdout, stderr) => {
       if (error) {
         throw error;
@@ -191,16 +193,6 @@ function start(botId) {
   botProcess.on("exit", (code, signal) => {
     console.log("child process exited code: " + code);
   });
-
-  /*
-  bot = mineflayer.createBot({
-    host: host,
-    port: port,
-    username: username,
-    password: password,
-  });
-  listen();
-  */
 }
 
 function stop(botId) {}

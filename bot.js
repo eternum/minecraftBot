@@ -5,6 +5,8 @@ const v = require("vec3");
 const botId = process.argv[2];
 const server = process.argv[3];
 const port = process.argv[4];
+const username = process.argv[5];
+const password = process.argv[6];
 
 ipc.config.id = "parent";
 ipc.config.appspace = "";
@@ -53,8 +55,8 @@ var lastEventTime = 0;
 bot = mineflayer.createBot({
   host: server,
   port: port,
-  username: "test_" + botId,
-  password: null,
+  username: username,
+  password: password,
 });
 
 let mcData;
