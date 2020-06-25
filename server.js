@@ -16,7 +16,8 @@ const cookieParser = require("cookie-parser");
 // ENV VARS
 const users = process.env.USERS;
 const botLogins = process.env.BOT_LOGINS;
-const  sessionSecret = process.env.SESSION_SECRET,
+const botPasswords = process.env.BOT_PASSWORDS;
+const sessionSecret = process.env.SESSION_SECRET;
 
 const initializePassport = require("./passport-config");
 initializePassport(passport, users);
