@@ -100,13 +100,13 @@ function listenSocket() {
     var message = JSON.parse(event.data);
     switch (message.action) {
       case "coords":
-        setCoords();
+        setCoords(message);
         break;
       case "health":
-        setHealth();
+        setHealth(message);
         break;
       case "hunger":
-        document.getElementById("hunger").innerHTML = message.data;
+        setHunger(message);
         break;
       case "started":
         botOnline(message.action);
@@ -199,11 +199,16 @@ function setHunger(message) {
   document.getElementById("hunger").innerHTML = message.data;
 }
 
-function setCoords(data) {
-  document.getElementById("hunger").innerHTML = message.data;
+function setCoords(message) {
+  document.getElementById("coords").innerHTML =
+    Math.round(message.data.x) +
+    " " +
+    Math.round(message.data.y) +
+    " " +
+    Math.round(message.data.z);
 }
-function setHealth(data) {
-  document.getElementById("hunger").innerHTML = message.data;
+function setHealth(message) {
+  document.getElementById("health").innerHTML = message.data;
 }
 
 function getCurrentBot() {
