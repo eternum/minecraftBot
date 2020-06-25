@@ -1,9 +1,25 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const http = require("http");
+const express = require("express");
 const fs = require("fs");
 const child = require("child_process");
 const ipc = require("node-ipc");
 const WebSocket = require("ws");
-// env constants
+const app = express();
+const passport = require("passport");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+
+// ENV VARS
+const users = process.env.USERS;
+const botLogins = process.env.BOT_LOGINS;
+const  sessionSecret = process.env.SESSION_SECRET,
+
+const initializePassport = require("./passport-config");
+initializePassport(passport, users);
 
 ipc.config.id = "parent";
 ipc.config.retry = 1500;
@@ -18,64 +34,115 @@ let sockets = new Map();
 var mcAddress = "mc.hackclub.com";
 var mcPort = 25565;
 
-// initialize http server
-console.log("starting server");
-const server = http.createServer(function (request, response) {
-  switch (request.method) {
-    case "GET": // this entire section serves the static website
-      var file = ""; // blanks file path for each request
-      var fileType = ""; // blanks file type for each request
+// EXPRESS STUFF
+app.set("trust proxy", 1); // trust first proxy
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }));
+app.use(
+  session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
-      // "/" is the request for the root file. in this case it is html
-      if (request.url == "/") {
-        file = "index.html";
-        fileType = "text/html";
+// EXPRESS ROUTES
 
-        // checks against regex for .js extension
-      } else if (request.url.match(".*.(js)")) {
-        file = request.url.substring(1); // here we remove the firs character in the request string which is a "/". this is done because fs gets mad if you dont
-        fileType = "application/javascript"; // this sets the fileType to javascript
-
-        // checks against regex for .css extension
-      } else if (request.url.match(".*.(css)")) {
-        file = request.url.substring(1); // look at comment above
-        fileType = "text/css"; // sets fileType to css for headers
-      }
-
-      // makes sure file isnt blank and doesnt throw errors
-      if (file != "") {
-        fs.readFile(file, (err, data) => {
-          // error handler
-          if (err) {
-            var message = "[ERROR]: " + err;
-            console.log(message); // logs error message to console
-            return404(response); // sends a 404 resource not found to the client
-          } else {
-            // writes a success header
-            response.writeHead(200, {
-              "Content-Type": fileType, // adds content type
-              "Access-Control-Allow-Headers": "*", // for getting around cors rules
-              "Access-Control-Allow-Origin": "*",
-            });
-            response.end(data); // ends the response and sends the data from the file
-          }
-        });
-
-        break;
-      }
-
-    default:
-      return404(response);
-  }
+app.get("/", checkAuthenticated, function (request, response) {
+  file = "index.html";
+  fileType = "text/html";
+  sendResponse(response, file, fileType);
 });
 
+app.get("/login", checkNotAuthenticated, function (request, response) {
+  file = "login.html";
+  fileType = "text/html";
+  sendResponse(response, file, fileType);
+});
+
+app.get("/auth/github", passport.authenticate("github"), function (req, res) {
+  // The request will be redirected to GitHub for authentication, so this
+  // function will not be called.
+});
+
+app.get(
+  "/auth/github/callback",
+  passport.authenticate("github", { failureRedirect: "/login" }),
+  function (req, res) {
+    res.redirect("/");
+  }
+);
+
+app.get("/logout", function (req, res) {
+  req.logout();
+  res.redirect("/");
+});
+
+app.get(/.*.(js)/, checkAuthenticated, function (request, response) {
+  file = request.url.substring(1); // here we remove the firs character in the request string which is a "/". this is done because fs gets mad if you dont
+  fileType = "application/javascript"; // this sets the fileType to javascript
+  sendResponse(response, file, fileType);
+});
+app.get(/.*.(css)/, function (request, response) {
+  file = request.url.substring(1); // look at comment above
+  fileType = "text/css"; // sets fileType to css for headers
+  sendResponse(response, file, fileType);
+});
+
+function sendResponse(response, file, fileType) {
+  if (file != "") {
+    fs.readFile(file, (err, data) => {
+      // error handler
+      if (err) {
+        var message = "[ERROR]: " + err;
+        console.log(message); // logs error message to console
+        return404(response); // sends a 404 resource not found to the client
+      } else {
+        // writes a success header
+        response.status(200);
+        response.set({
+          "Content-Type": fileType, // adds content type
+          "Access-Control-Allow-Headers": "*", // for getting around cors rules
+          "Access-Control-Allow-Origin": "*",
+        });
+        response.send(data); // ends the response and sends the data from the file
+        response.end();
+      }
+    });
+  } else {
+    return404();
+  }
+}
+
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+
+  res.redirect("/login");
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect("/");
+  }
+  next();
+}
+// initialize http server
+console.log("starting server");
+const server = http.createServer(app);
+
 function return404(response) {
-  response.writeHead(404, {
+  response.status(404);
+  response.set({
     "Content-Type": "text/html",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Origin": "*",
   });
-  response.end("resource not found");
+  response.send("resource not found");
+  response.end();
 }
 
 // set http server listen ports
