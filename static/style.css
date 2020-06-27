@@ -1,6 +1,19 @@
 .status {
 }
 
+.card-header {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-control.custom-switch,
+custom-control-input{
+  padding-bottom: 0;
+  margin-left: 1em;
+}
+
 .key {
   display: flex;
   justify-content: center;
@@ -129,7 +142,7 @@
   background-color: #505661;
 }
 
-[data-theme="dark-well"] {
+[data-theme='dark-well'] {
   background-color: #272c30 !important;
   color: lightgray;
 }
