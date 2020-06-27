@@ -1,6 +1,7 @@
 .status {
 }
 
+
 .card-header {
   display: flex;
 
@@ -8,10 +9,21 @@
   align-items: center;
 }
 
-.custom-control.custom-switch,
-custom-control-input{
-  padding-bottom: 0;
+.custom-control.custom-switch{
   margin-left: 1em;
+}
+
+.inline-switch {
+  display: flex;
+  flex-direction: row;
+
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inline-switch h6 {
+  margin: 0;
+  padding: 0;
 }
 
 .key {
