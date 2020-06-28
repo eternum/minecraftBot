@@ -1,7 +1,7 @@
 /// WebSocket And stuff
 const url = "http://0.0.0.0";
-var connected = false;
-var keys = { w: false, a: false, s: false, d: false, space: false };
+let connected = false;
+let keys = { w: false, a: false, s: false, d: false, space: false };
 
 // listeners
 document.getElementById("botSelected").onchange = function (event) {
@@ -11,7 +11,7 @@ document.getElementById("botSelected").onchange = function (event) {
 document.addEventListener(
   "keydown",
   (event) => {
-    var key = "";
+    let key = "";
     const keyName = event.code;
     switch (keyName) {
       case "KeyW":
@@ -97,7 +97,7 @@ function listenSocket() {
   };
   socketserver.onmessage = function (event) {
     console.log(event.data);
-    var message = JSON.parse(event.data);
+    let message = JSON.parse(event.data);
     switch (message.action) {
       case "coords":
         setCoords(message);
@@ -148,9 +148,9 @@ function attack() {
   });
 }
 function setServer(address, port) {
-  var address = document.getElementById("server").value;
-  var port = document.getElementById("port").value;
-  var data = { address: address, port: port };
+  let address = document.getElementById("server").value;
+  let port = document.getElementById("port").value;
+  let data = { address: address, port: port };
 
   send({
     action: "setServer",
@@ -249,7 +249,7 @@ function toggleTheme() {
 }
 
 function serverOnline(state) {
-  var status = document.getElementById("serverStatus");
+  let status = document.getElementById("serverStatus");
   if (state) {
     status.setAttribute("class", "badge badge-success");
     status.innerHTML = "Online";
@@ -259,7 +259,7 @@ function serverOnline(state) {
   }
 }
 function botOnline(state) {
-  var status = document.getElementById("botStatus");
+  let status = document.getElementById("botStatus");
 
   switch (state) {
     case "started":
