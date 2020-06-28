@@ -1,5 +1,4 @@
-.status {
-}
+
 
 .key {
   display: flex;
@@ -96,13 +95,6 @@
   flex-grow: 4;
   margin-top: 20px;
 }
-
-.botSelector {
-}
-
-.toggle-dark {
-}
-
 .header {
   display: flex;
   background-color: #d6d8da;

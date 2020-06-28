@@ -27,6 +27,7 @@
     "passport-github": "^1.1.0",
     "passport-github2": "0.1.12",
     "vec3": "0.1.5",
-    "ws": "7.3.0"
+    "ws": "7.3.0",
+    "js-yaml": "3.14.0"
   }
 }
