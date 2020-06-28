@@ -61,15 +61,15 @@ bot.once("inject_allowed", () => {
 });
 
 function intitiateConnection(botId) {
-  let message = { action: "started", botId: botId };
+  var message = { action: "started", botId: botId };
   send("started", message);
 }
 
 function sendCoordinates() {
   if (bot != null) {
-    let position = bot.entity.position;
+    var position = bot.entity.position;
 
-    let json = {
+    var json = {
       action: "coords",
       data: { x: position.x, y: position.y, z: position.z },
       botId: botId,
@@ -80,18 +80,18 @@ function sendCoordinates() {
 
 function sendHealth() {
   if (bot != null) {
-    let health = bot.health;
+    var health = bot.health;
 
-    let json = { action: "health", data: health, botId: botId };
+    var json = { action: "health", data: health, botId: botId };
     send("data", json);
   }
 }
 
 function sendHunger() {
   if (bot != null) {
-    let hunger = bot.food;
+    var hunger = bot.food;
 
-    let json = { action: "hunger", data: hunger, botId: botId };
+    var json = { action: "hunger", data: hunger, botId: botId };
     send("data", json);
   }
 }

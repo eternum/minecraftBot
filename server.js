@@ -30,10 +30,10 @@ const PORT = 3000;
 const HOST = "0.0.0.0";
 const SOCKET_PATH = "/tmp/mineflayer.sock";
 
-let botProcesses = new Map();
-let sockets = new Map();
-let MC_ADDRESS = process.env.MC_ADDRESS;
-let MC_PORT = process.env.MC_PORT;
+var botProcesses = new Map();
+var sockets = new Map();
+var MC_ADDRESS = process.env.MC_ADDRESS;
+var MC_PORT = process.env.MC_PORT;
 
 // EXPRESS STUFF
 app.set("trust proxy", 1); // trust first proxy
@@ -97,7 +97,7 @@ function sendResponse(response, file, fileType) {
     fs.readFile(file, (err, data) => {
       // error handler
       if (err) {
-        let message = "[ERROR]: " + err;
+        var message = "[ERROR]: " + err;
         console.log(message); // logs error message to console
         return404(response); // sends a 404 resource not found to the client
       } else {
@@ -176,9 +176,9 @@ ipc.serve(SOCKET_PATH, function () {
 
 function start(botId) {
   console.log("[INFO]: New Bot created and started");
-  let username = bots[botId].username;
-  let password = bots[botId].password;
-  let botProcess = child.execFile(
+  var username = bots[botId].username;
+  var password = bots[botId].password;
+  var botProcess = child.execFile(
     "node",
     ["bot.js", botId, MC_ADDRESS, MC_PORT, username, password],
     (error, stdout, stderr) => {
@@ -206,9 +206,9 @@ server.on("close", function () {
 wss.on("connection", function connection(ws, req) {
   console.log("[INFO]: New Connection From: " + req.socket.remoteAddress);
   ws.on("message", function incoming(message) {
-    let data = JSON.parse(message);
-    let action = data.action;
-    let botId = data.botId;
+    var data = JSON.parse(message);
+    var action = data.action;
+    var botId = data.botId;
     switch (action) {
       case "setServer":
         MC_ADDRESS = data.data.address;
@@ -223,7 +223,7 @@ wss.on("connection", function connection(ws, req) {
         break;
       default:
         if (sockets.has(botId)) {
-          let socket = sockets.get(botId);
+          var socket = sockets.get(botId);
           sendToChild(socket, "data", data);
         }
     }
