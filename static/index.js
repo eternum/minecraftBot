@@ -100,13 +100,13 @@ function listenSocket() {
     var message = JSON.parse(event.data);
     switch (message.action) {
       case "coords":
-        setCoords(message);
+        setCoords(message.data);
         break;
       case "health":
-        setHealth(message);
+        setHealth(message.data);
         break;
       case "hunger":
-        setHunger(message);
+        setHunger(message.data);
         break;
       case "started":
         botOnline(message.action);
@@ -121,32 +121,16 @@ function listenSocket() {
 
 // functions
 
-function say(message) {
-  send({
-    action: "say",
-    botId: getCurrentBot(),
-    message: message,
-  });
-}
 function kill() {
+  // this is not used in a button because this will kill the bot.
+  // this is only neccissary to use in circumstances in which the connection between the server and the bot process is broken.
+
   send({
     action: "kill",
     botId: getCurrentBot(),
   });
 }
 
-function place() {
-  send({
-    action: "place",
-    botId: getCurrentBot(),
-  });
-}
-function attack() {
-  send({
-    action: "attack",
-    botId: getCurrentBot(),
-  });
-}
 function setServer(address, port) {
   var address = document.getElementById("server").value;
   var port = document.getElementById("port").value;
@@ -170,45 +154,21 @@ function startBot() {
     botId: getCurrentBot(),
   });
 }
-function getCoords() {
-  if (connected) {
-    send({
-      action: "getCoords",
-      botId: getCurrentBot(),
-    });
-  }
-}
-function getHealth() {
-  if (connected) {
-    send({
-      action: "getHealth",
-      botId: getCurrentBot(),
-    });
-  }
-}
-function getHunger() {
-  if (connected) {
-    send({
-      action: "getHunger",
-      botId: getCurrentBot(),
-    });
-  }
-}
 
 function setHunger(message) {
-  document.getElementById("hunger").innerHTML = message.data;
+  document.getElementById("hunger").innerHTML = message;
 }
 
 function setCoords(message) {
   document.getElementById("coords").innerHTML =
-    Math.round(message.data.x) +
+    Math.round(message.x) +
     " " +
-    Math.round(message.data.y) +
+    Math.round(message.y) +
     " " +
-    Math.round(message.data.z);
+    Math.round(message.z);
 }
 function setHealth(message) {
-  document.getElementById("health").innerHTML = message.data;
+  document.getElementById("health").innerHTML = message;
 }
 
 function getCurrentBot() {
@@ -216,9 +176,10 @@ function getCurrentBot() {
 }
 
 /*
-required headers
-action:
-botId:
+JSON packet data structure
+action: // required
+botId: // required
+data: // optional
 
 */
 function send(message) {

@@ -25,25 +25,7 @@ ipc.connectTo("parent", socketPath, function () {
         stop();
         break;
       case "status":
-        sendCoordinates();
         sendStatus();
-        break;
-      case "getCoords":
-        sendCoordinates();
-        break;
-      case "say":
-        console.log("[INFO]: " + data.message);
-        bot.chat(data.message);
-        break;
-      case "getHealth":
-        sendHealth();
-        break;
-      case "getHunger":
-        sendHunger();
-        break;
-      case "place":
-        break;
-      case "attack":
         break;
       case "move":
         move(data);
