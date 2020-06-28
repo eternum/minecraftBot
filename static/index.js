@@ -5,13 +5,11 @@ var connected = false;
 // Variables
 let socketOpen;
 let botStarted;
-let movementOn;
+let movementOn = false;
 const botSwitch = document.getElementById('botSwitch');
 const socketSwitch = document.getElementById('socketSwitch');
 const movementSwitch = document.getElementById('movementSwitch');
 var keys = { w: false, a: false, s: false, d: false, space: false };
-
-loadSwitches();
 
 // listeners
 document.getElementById('botSelected').onchange = function (event) {
@@ -21,37 +19,39 @@ document.getElementById('botSelected').onchange = function (event) {
 document.addEventListener(
   'keydown',
   (event) => {
-    var key = '';
-    const keyName = event.code;
-    switch (keyName) {
-      case 'KeyW':
-        keys.w = true;
-        key = 'forward';
-        break;
-      case 'KeyA':
-        keys.a = true;
-        key = 'right';
-        break;
-      case 'KeyS':
-        keys.s = true;
-        key = 'back';
-        break;
-      case 'KeyD':
-        keys.d = true;
-        key = 'left';
-        break;
-      case 'Space':
-        keys.space = true;
-        key = 'jump';
-        break;
-    }
-    if (key != '') {
-      keylogger(keys);
-      send({
-        action: 'move',
-        botId: getCurrentBot(),
-        data: { operation: key, state: true },
-      });
+    if (movementOn) {
+      var key = '';
+      const keyName = event.code;
+      switch (keyName) {
+        case 'KeyW':
+          keys.w = true;
+          key = 'forward';
+          break;
+        case 'KeyA':
+          keys.a = true;
+          key = 'right';
+          break;
+        case 'KeyS':
+          keys.s = true;
+          key = 'back';
+          break;
+        case 'KeyD':
+          keys.d = true;
+          key = 'left';
+          break;
+        case 'Space':
+          keys.space = true;
+          key = 'jump';
+          break;
+      }
+      if (key != '') {
+        keylogger(keys);
+        send({
+          action: 'move',
+          botId: getCurrentBot(),
+          data: { operation: key, state: true },
+        });
+      }
     }
   },
   false
@@ -60,39 +60,41 @@ document.addEventListener(
 document.addEventListener(
   'keyup',
   (event) => {
-    if (event.repeat) {
-      return;
-    }
-    const keyName = event.code;
-    switch (keyName) {
-      case 'KeyW':
-        keys.w = false;
-        key = 'forward';
-        break;
-      case 'KeyA':
-        keys.a = false;
-        key = 'right';
-        break;
-      case 'KeyS':
-        keys.s = false;
-        key = 'back';
-        break;
-      case 'KeyD':
-        keys.d = false;
-        key = 'left';
-        break;
-      case 'Space':
-        keys.space = false;
-        key = 'jump';
-        break;
-    }
-    if (key != '') {
-      keylogger(keys);
-      send({
-        action: 'move',
-        botId: getCurrentBot(),
-        data: { operation: key, state: false },
-      });
+    if (movementOn) {
+      if (event.repeat) {
+        return;
+      }
+      const keyName = event.code;
+      switch (keyName) {
+        case 'KeyW':
+          keys.w = false;
+          key = 'forward';
+          break;
+        case 'KeyA':
+          keys.a = false;
+          key = 'right';
+          break;
+        case 'KeyS':
+          keys.s = false;
+          key = 'back';
+          break;
+        case 'KeyD':
+          keys.d = false;
+          key = 'left';
+          break;
+        case 'Space':
+          keys.space = false;
+          key = 'jump';
+          break;
+      }
+      if (key != '') {
+        keylogger(keys);
+        send({
+          action: 'move',
+          botId: getCurrentBot(),
+          data: { operation: key, state: false },
+        });
+      }
     }
   },
   false
@@ -138,7 +140,7 @@ const loadSwitches = () => {
   if (botStarted) {
     botStarted.checked = true;
   }
-}
+};
 
 const socketSwitchToggled = () => {
   if (socketOpen) {
@@ -158,10 +160,30 @@ const botSwitchToggled = () => {
 
 const movementSwitchToggled = () => {
   if (movementOn) {
-    movementOn = false;
+    disableMovement();
   } else if (!movementOn) {
-    movementOn = true;
+    enableMovement();
   }
+};
+
+const enableMovement = () => {
+  movementOn = true;
+
+  document.getElementById('w').classList.remove('disabled');
+  document.getElementById('a').classList.remove('disabled');
+  document.getElementById('s').classList.remove('disabled');
+  document.getElementById('d').classList.remove('disabled');
+  document.getElementById('spacebar').classList.remove('disabled');
+};
+
+const disableMovement = () => {
+  movementOn = false;
+
+  document.getElementById('w').classList.add('disabled');
+  document.getElementById('a').classList.add('disabled');
+  document.getElementById('s').classList.add('disabled');
+  document.getElementById('d').classList.add('disabled');
+  document.getElementById('spacebar').classList.add('disabled');
 };
 
 function say(message) {
@@ -325,18 +347,27 @@ function botOnline(state) {
 }
 
 function keylogger(keys) {
-  if (keys.w) document.getElementById('w').classList.add('keypressed');
-  if (keys.a) document.getElementById('a').classList.add('keypressed');
-  if (keys.s) document.getElementById('s').classList.add('keypressed');
-  if (keys.d) document.getElementById('d').classList.add('keypressed');
-  if (keys.space)
+  if (keys.w && movementOn)
+    document.getElementById('w').classList.add('keypressed');
+  if (keys.a && movementOn)
+    document.getElementById('a').classList.add('keypressed');
+  if (keys.s && movementOn)
+    document.getElementById('s').classList.add('keypressed');
+  if (keys.d && movementOn)
+    document.getElementById('d').classList.add('keypressed');
+  if (keys.space && movementOn)
     document.getElementById('spacebar').classList.add('keypressed');
-  if (!keys.w) document.getElementById('w').classList.remove('keypressed');
-  if (!keys.a) document.getElementById('a').classList.remove('keypressed');
-  if (!keys.s) document.getElementById('s').classList.remove('keypressed');
-  if (!keys.d) document.getElementById('d').classList.remove('keypressed');
-  if (!keys.space)
+  if (!keys.w && movementOn)
+    document.getElementById('w').classList.remove('keypressed');
+  if (!keys.a && movementOn)
+    document.getElementById('a').classList.remove('keypressed');
+  if (!keys.s && movementOn)
+    document.getElementById('s').classList.remove('keypressed');
+  if (!keys.d && movementOn)
+    document.getElementById('d').classList.remove('keypressed');
+  if (!keys.space && movementOn)
     document.getElementById('spacebar').classList.remove('keypressed');
 }
 
 setTimeout(() => startWebSocket(), 100);
+loadSwitches();

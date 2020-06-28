@@ -43,6 +43,11 @@
     border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
+.disabled {
+  border-color:#6f747c;
+  color: #6f747c;
+}
+
 .key-wide {
   min-width: 160px;
 }
@@ -59,6 +64,7 @@
   display: flex;
   justify-content: center;
 }
+
 .keypressed {
   background: #007bff;
   color: white;
