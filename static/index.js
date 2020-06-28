@@ -1,6 +1,14 @@
 /// WebSocket And stuff
 const url = 'http://0.0.0.0';
 var connected = false;
+
+// Variables
+let socketOpen;
+let botStarted;
+let movementOn;
+const botSwitch = document.getElementById('botSwitch');
+const socketSwitch = document.getElementById('socketSwitch');
+const movementSwitch = document.getElementById('movementSwitch');
 var keys = { w: false, a: false, s: false, d: false, space: false };
 
 // listeners
@@ -121,6 +129,34 @@ function listenSocket() {
 
 // functions
 
+const socketSwitchToggled = () => {
+  if (socketOpen) {
+    socketOpen = false;
+    closeWebSocket();
+  } else if (!socketOpen) {
+    socketOpen = true;
+    startWebSocket();
+  }
+};
+
+const botSwitchToggled = () => {
+  if (botStarted) {
+    botStarted = false;
+    stopBot();
+  } else if (!botStarted) {
+    botStarted = true;
+    startBot();
+  }
+};
+
+const movementSwitchToggled = () => {
+  if (movementOn) {
+    movementOn = false;
+  } else if (!movementOn) {
+    movementOn = true;
+  }
+};
+
 function say(message) {
   send({
     action: 'say',
@@ -227,10 +263,13 @@ function send(message) {
 }
 
 function closeWebSocket() {
+  socketOpen = false;
   socketserver.close();
 }
+
 function startWebSocket() {
   socketserver = new WebSocket('ws://0.0.0.0:3000', 'protocolOne');
+  socketOpen = true;
   listenSocket();
 }
 
