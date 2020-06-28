@@ -11,6 +11,8 @@ const socketSwitch = document.getElementById('socketSwitch');
 const movementSwitch = document.getElementById('movementSwitch');
 var keys = { w: false, a: false, s: false, d: false, space: false };
 
+loadSwitches();
+
 // listeners
 document.getElementById('botSelected').onchange = function (event) {
   console.log(getCurrentBot());
@@ -129,22 +131,27 @@ function listenSocket() {
 
 // functions
 
+const loadSwitches = () => {
+  if (socketOpen) {
+    socketSwitch.checked = true;
+  }
+  if (botStarted) {
+    botStarted.checked = true;
+  }
+}
+
 const socketSwitchToggled = () => {
   if (socketOpen) {
-    socketOpen = false;
     closeWebSocket();
   } else if (!socketOpen) {
-    socketOpen = true;
     startWebSocket();
   }
 };
 
 const botSwitchToggled = () => {
   if (botStarted) {
-    botStarted = false;
     stopBot();
   } else if (!botStarted) {
-    botStarted = true;
     startBot();
   }
 };
@@ -199,12 +206,14 @@ function stopBot() {
     action: 'stop',
     botId: getCurrentBot(),
   });
+  botStarted = false;
 }
 function startBot() {
   send({
     action: 'start',
     botId: getCurrentBot(),
   });
+  botStarted = true;
 }
 function getCoords() {
   if (connected) {
