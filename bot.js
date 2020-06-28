@@ -1,6 +1,8 @@
 const mineflayer = require("mineflayer");
 const ipc = require("node-ipc");
 const v = require("vec3");
+const dataManager = require("./dataManager");
+var config = dataManager.loadConfig();
 
 const botId = process.argv[2];
 const server = process.argv[3];
@@ -8,10 +10,12 @@ const port = process.argv[4];
 const username = process.argv[5] ? process.argv[5] : "bot_" + botId;
 const password = process.argv[6] ? process.argv[6] : null;
 
+var socketPath = config.ipc.socketPath;
+
 ipc.config.id = "parent";
 ipc.config.appspace = "";
 ipc.config.silent = true;
-ipc.connectTo("parent", "/tmp/mineflayer.sock", function () {
+ipc.connectTo("parent", socketPath, function () {
   parent = ipc.of.parent;
   ipc.log("## connected to parent ##".rainbow, ipc.config.delay);
 
@@ -35,7 +39,7 @@ ipc.connectTo("parent", "/tmp/mineflayer.sock", function () {
         sendHealth();
         break;
       case "getHunger":
-        sendHunger;
+        sendHunger();
         break;
       case "place":
         break;

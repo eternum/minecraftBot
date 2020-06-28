@@ -13,6 +13,12 @@ const passport = require("passport");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 
+// CONFIG SETUP
+const dataManager = require("./dataManager");
+dataManager.loadConfig();
+var config = dataManager.config;
+var botFile = config.botFile;
+
 // ENV VARS
 const users = process.env.USERS.split("|");
 const botLogins = process.env.BOT_LOGINS.split("|");
@@ -26,9 +32,9 @@ ipc.config.id = "parent";
 ipc.config.retry = 1500;
 ipc.config.silent = true;
 
-const PORT = 3000;
-const HOST = "0.0.0.0";
-const SOCKET_PATH = "/tmp/mineflayer.sock";
+const PORT = config.port;
+const HOST = config.host;
+const SOCKET_PATH = config.ipc.socketPath;
 
 var botProcesses = new Map();
 var sockets = new Map();
@@ -148,7 +154,7 @@ function return404(response) {
 
 // set http server listen ports
 server.listen(PORT, HOST, () => {
-  console.log("[INFO]: http server listening at: " + host + ":" + port);
+  console.log("[INFO]: http server listening at: " + HOST + ":" + PORT);
 });
 
 ipc.serve(SOCKET_PATH, function () {
@@ -176,11 +182,11 @@ ipc.serve(SOCKET_PATH, function () {
 
 function start(botId) {
   console.log("[INFO]: New Bot created and started");
-  var username = bots[botId].username;
-  var password = bots[botId].password;
+  var username = botLogins[botId];
+  var password = botPasswords[botId];
   var botProcess = child.execFile(
     "node",
-    ["bot.js", botId, MC_ADDRESS, MC_PORT, username, password],
+    [botFile, botId, MC_ADDRESS, MC_PORT, username, password],
     (error, stdout, stderr) => {
       if (error) {
         throw error;
@@ -188,6 +194,7 @@ function start(botId) {
       console.log(stdout);
     }
   );
+  bots.set(botId, new bot(botId, botProcess));
   botProcesses.set(botId, botProcess);
 
   botProcess.on("exit", (code, signal) => {
