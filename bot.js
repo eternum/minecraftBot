@@ -32,6 +32,15 @@ ipc.connectTo("parent", socketPath, function () {
         break;
     }
   });
+  parent.on("error", function () {
+    stop();
+  });
+  parent.on("disconnect", function () {
+    stop();
+  });
+  parent.on("destroy", function () {
+    stop();
+  });
 });
 
 const bot = mineflayer.createBot({

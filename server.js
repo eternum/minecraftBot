@@ -165,7 +165,7 @@ function return404(response) {
 function generateTicket(request) {
   let ticket = crypto.randomBytes(128).toString("hex");
   let ticketHash = getHash(ticket, "hex");
-  let expiryDate = 5000 + Date.now();
+  let expiryDate = 10000 + Date.now();
   let data = {
     ticket: ticket,
     agent: request.headers["user-agent"],
@@ -176,7 +176,7 @@ function generateTicket(request) {
   tickets.set(ticketHash, data);
   setTimeout(() => {
     tickets.delete(ticketHash);
-  }, 50000);
+  }, 30000);
   return ticket;
 }
 
@@ -184,11 +184,12 @@ function verifyTicket(ticket, request) {
   let ticketHash = getHash(ticket);
   if (!tickets.has(ticketHash)) return false;
   let info = tickets.get(ticketHash);
+  if (!(Date.now() < info.expires)) return false;
+  console.log(Date.now() - (info.expires - 10000));
   let ticketMatch = ticket == info.ticket;
   let userMatch = request.headers["user-agent"] == info.agent;
   let auth = info.auth;
-  let validDate = Date.now() < info.expires;
-  return ticketMatch && userMatch && auth && validDate;
+  return ticketMatch && userMatch && auth;
 }
 function getHash(string) {
   let hash = crypto.createHash("sha1");
@@ -248,16 +249,12 @@ function start(botId) {
       console.log(stdout);
     }
   );
-  bots.set(botId, new bot(botId, botProcess));
   botProcesses.set(botId, botProcess);
 
   botProcess.on("exit", (code, signal) => {
     console.log("child process exited code: " + code);
   });
 }
-
-function stop(botId) {}
-
 // create new websocket server
 const wss = new WebSocket.Server({ noServer: true });
 
@@ -279,7 +276,6 @@ wss.on("connection", function connection(ws, req) {
 
   ws.on("message", function incoming(message) {
     var data = JSON.parse(message);
-    console.log(data);
     if (!data.ticket) {
       var action = data.action;
       var botId = data.botId;
@@ -287,10 +283,10 @@ wss.on("connection", function connection(ws, req) {
         case "setServer":
           MC_ADDRESS = data.data.address;
           MC_PORT = data.data.port;
-          console.log(mcAddress + ":" + mcPort);
+          console.log(MC_ADDRESS + ":" + MC_ADDRESS);
           break;
         case "start":
-          if (botId != 0) start(botId, mcAddress, mcPort);
+          if (botId != 0) start(botId, MC_ADDRESS, MC_PORT);
           break;
         case "kill":
           botProcesses.get(botId).kill("SIGHUP");

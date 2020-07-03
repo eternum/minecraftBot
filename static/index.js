@@ -3,10 +3,12 @@ const url = "http://localhost:3000";
 var connected = false;
 var keys = { w: false, a: false, s: false, d: false, space: false };
 var ticket;
+var botSelected = 0;
 
 // listeners
 document.getElementById("botSelected").onchange = function (event) {
-  console.log(getCurrentBot());
+  botSelected = getCurrentBot();
+  console.log(botSelected);
 };
 
 document.addEventListener(
@@ -92,23 +94,26 @@ document.addEventListener(
 // looks like a function but is actually just to trigger the listeners after the server is online
 function listenSocket() {
   socketserver.onopen = function (event) {
-    authenticateSocket();
+    console.log("connected");
+    connected = true;
+    serverOnline(true);
   };
   socketserver.onmessage = function (event) {
     console.log(event.data);
     var message = JSON.parse(event.data);
+    var botId = message.botId;
     switch (message.action) {
       case "coords":
-        setCoords(message.data);
+        setCoords(message.data, botId);
         break;
       case "health":
-        setHealth(message.data);
+        setHealth(message.data, botId);
         break;
       case "hunger":
-        setHunger(message.data);
+        setHunger(message.data, botId);
         break;
       case "started":
-        botOnline(message.action);
+        botOnline(message.action, botId);
         break;
     }
   };
@@ -133,14 +138,6 @@ async function getTicket() {
       }).then((data) => data.text())
     );
   });
-}
-
-function authenticateSocket() {
-  console.log("Authenticating");
-
-  console.log("connected");
-  connected = true;
-  serverOnline(true);
 }
 
 function kill() {
@@ -177,20 +174,26 @@ function startBot() {
   });
 }
 
-function setHunger(message) {
-  document.getElementById("hunger").innerHTML = message;
+function setHunger(message, botId) {
+  if (botId == botSelected) {
+    document.getElementById("hunger").innerHTML = message;
+  }
 }
 
-function setCoords(message) {
-  document.getElementById("coords").innerHTML =
-    Math.round(message.x) +
-    " " +
-    Math.round(message.y) +
-    " " +
-    Math.round(message.z);
+function setCoords(message, botId) {
+  if (botId == botSelected) {
+    document.getElementById("coords").innerHTML =
+      Math.round(message.x) +
+      " " +
+      Math.round(message.y) +
+      " " +
+      Math.round(message.z);
+  }
 }
 function setHealth(message) {
-  document.getElementById("health").innerHTML = message;
+  if (botId == botSelected) {
+    document.getElementById("health").innerHTML = message;
+  }
 }
 
 function getCurrentBot() {
@@ -213,6 +216,8 @@ function closeWebSocket() {
   socketserver.close();
 }
 async function startWebSocket() {
+  console.log("Authenticating");
+
   getTicket().then((ticket) => {
     socketserver = new WebSocket(
       "ws://0.0.0.0:3000/?ticket=" + ticket,
