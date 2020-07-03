@@ -1,7 +1,8 @@
 /// WebSocket And stuff
-const url = "http://0.0.0.0";
+const url = "http://localhost:3000";
 var connected = false;
 var keys = { w: false, a: false, s: false, d: false, space: false };
+var ticket;
 
 // listeners
 document.getElementById("botSelected").onchange = function (event) {
@@ -91,9 +92,7 @@ document.addEventListener(
 // looks like a function but is actually just to trigger the listeners after the server is online
 function listenSocket() {
   socketserver.onopen = function (event) {
-    console.log("connected");
-    connected = true;
-    serverOnline(true);
+    authenticateSocket();
   };
   socketserver.onmessage = function (event) {
     console.log(event.data);
@@ -120,6 +119,29 @@ function listenSocket() {
 }
 
 // functions
+
+async function getTicket() {
+  return new Promise((resolve, reject) => {
+    resolve(
+      fetch(url + "/ws", {
+        method: "GET",
+        headers: {
+          "Access-Control-Allow-Headers": "*", // for getting around cors rules
+          "Access-Control-Allow-Origin": "*",
+          Cookie: document.cookie,
+        },
+      }).then((data) => data.text())
+    );
+  });
+}
+
+function authenticateSocket() {
+  console.log("Authenticating");
+
+  console.log("connected");
+  connected = true;
+  serverOnline(true);
+}
 
 function kill() {
   // this is not used in a button because this will kill the bot.
@@ -190,9 +212,14 @@ function send(message) {
 function closeWebSocket() {
   socketserver.close();
 }
-function startWebSocket() {
-  socketserver = new WebSocket("ws://0.0.0.0:3000", "protocolOne");
-  listenSocket();
+async function startWebSocket() {
+  getTicket().then((ticket) => {
+    socketserver = new WebSocket(
+      "ws://0.0.0.0:3000/?ticket=" + ticket,
+      "protocolOne"
+    );
+    listenSocket();
+  });
 }
 
 function toggleTheme() {

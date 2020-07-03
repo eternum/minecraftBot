@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const yaml = require("js-yaml");
 const fs = require("fs");
+var config;
 
 const configFileLocation = process.env.CONFIG_FILE
   ? process.env.CONFIG_FILE
@@ -9,7 +10,8 @@ const configFileLocation = process.env.CONFIG_FILE
 
 function loadConfig() {
   try {
-    config = yaml.safeLoad(fs.readFileSync(configFileLocation, "utf8"));
+    config = yaml.safeLoad(fs.readFileSync("example.yml", "utf8"));
+    return config;
   } catch (e) {
     console.log(e);
   }
@@ -17,4 +19,5 @@ function loadConfig() {
 
 module.exports = {
   loadConfig,
+  config,
 };

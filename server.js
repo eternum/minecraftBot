@@ -1,7 +1,6 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
-
 const http = require("http");
 const express = require("express");
 const fs = require("fs");
@@ -12,11 +11,11 @@ const app = express();
 const passport = require("passport");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-
+const crypto = require("crypto");
 // CONFIG SETUP
 const dataManager = require("./dataManager");
-dataManager.loadConfig();
-var config = dataManager.config;
+var config = dataManager.loadConfig();
+console.log(config);
 var botFile = config.botFile;
 
 // ENV VARS
@@ -26,8 +25,10 @@ const botPasswords = process.env.BOT_PASSWORDS.split("|");
 const sessionSecret = process.env.SESSION_SECRET;
 
 const initializePassport = require("./passport-config");
+
 initializePassport(passport, users);
 
+// ipc socket config
 ipc.config.id = "parent";
 ipc.config.retry = 1500;
 ipc.config.silent = true;
@@ -38,11 +39,13 @@ const SOCKET_PATH = config.ipc.socketPath;
 
 var botProcesses = new Map();
 var sockets = new Map();
+var tickets = new Map();
 var MC_ADDRESS = process.env.MC_ADDRESS;
 var MC_PORT = process.env.MC_PORT;
 
 // EXPRESS STUFF
 app.set("trust proxy", 1); // trust first proxy
+app.set("view engine", "ejs");
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(
@@ -98,6 +101,16 @@ app.get(/.*.(css)/, function (request, response) {
   sendResponse(response, file, fileType);
 });
 
+app.get("/ws", checkAuthenticated, function (request, response) {
+  let ticket = generateTicket(request);
+  response.status(200);
+  response.set({
+    "Access-Control-Allow-Headers": "*", // for getting around cors rules
+    "Access-Control-Allow-Origin": "*",
+  });
+  response.send(ticket);
+  response.end();
+});
 function sendResponse(response, file, fileType) {
   if (file != "") {
     fs.readFile(file, (err, data) => {
@@ -137,9 +150,6 @@ function checkNotAuthenticated(req, res, next) {
   }
   next();
 }
-// initialize http server
-console.log("starting server");
-const server = http.createServer(app);
 
 function return404(response) {
   response.status(404);
@@ -152,11 +162,54 @@ function return404(response) {
   response.end();
 }
 
+function generateTicket(request) {
+  let ticket = crypto.randomBytes(128).toString("hex");
+  let ticketHash = getHash(ticket, "hex");
+  let expiryDate = 5000 + Date.now();
+  let data = {
+    ticket: ticket,
+    agent: request.headers["user-agent"],
+    session: request.session,
+    auth: request.isAuthenticated(),
+    expires: expiryDate,
+  };
+  tickets.set(ticketHash, data);
+  setTimeout(() => {
+    tickets.delete(ticketHash);
+  }, 50000);
+  return ticket;
+}
+
+function verifyTicket(ticket, request) {
+  let ticketHash = getHash(ticket);
+  if (!tickets.has(ticketHash)) return false;
+  let info = tickets.get(ticketHash);
+  let ticketMatch = ticket == info.ticket;
+  let userMatch = request.headers["user-agent"] == info.agent;
+  let auth = info.auth;
+  let validDate = Date.now() < info.expires;
+  return ticketMatch && userMatch && auth && validDate;
+}
+function getHash(string) {
+  let hash = crypto.createHash("sha1");
+  hash.update(string);
+  return hash.digest("hex");
+}
+
+// initialize http server
+console.log("starting server");
+const server = http.createServer(app);
+
 // set http server listen ports
+
 server.listen(PORT, HOST, () => {
-  console.log("[INFO]: http server listening at: " + HOST + ":" + PORT);
+  console.log("[INFO]: https server listening at: " + HOST + ":" + PORT);
+});
+server.on("close", function () {
+  console.log("Connection Closed");
 });
 
+// setup ipc server
 ipc.serve(SOCKET_PATH, function () {
   ipc.server.on("connect", () => {
     console.log("Connected");
@@ -180,6 +233,7 @@ ipc.serve(SOCKET_PATH, function () {
   });
 });
 
+// start new bot with bot id
 function start(botId) {
   console.log("[INFO]: New Bot created and started");
   var username = botLogins[botId];
@@ -204,35 +258,49 @@ function start(botId) {
 
 function stop(botId) {}
 
-const wss = new WebSocket.Server({ server });
+// create new websocket server
+const wss = new WebSocket.Server({ noServer: true });
 
-server.on("close", function () {
-  console.log("Connection Closed");
+// this authenticates the websocket
+server.on("upgrade", function upgrade(request, socket, head) {
+  let ticket = request.url.slice(request.url.indexOf("=") + 1);
+  if (verifyTicket(ticket, request)) {
+    wss.handleUpgrade(request, socket, head, function done(ws) {
+      wss.emit("connection", ws, request);
+    });
+  } else {
+    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+    socket.destroy();
+  }
 });
 
 wss.on("connection", function connection(ws, req) {
   console.log("[INFO]: New Connection From: " + req.socket.remoteAddress);
+
   ws.on("message", function incoming(message) {
     var data = JSON.parse(message);
-    var action = data.action;
-    var botId = data.botId;
-    switch (action) {
-      case "setServer":
-        MC_ADDRESS = data.data.address;
-        MC_PORT = data.data.port;
-        console.log(mcAddress + ":" + mcPort);
-        break;
-      case "start":
-        if (botId != 0) start(botId, mcAddress, mcPort);
-        break;
-      case "kill":
-        botProcesses.get(botId).kill("SIGHUP");
-        break;
-      default:
-        if (sockets.has(botId)) {
-          var socket = sockets.get(botId);
-          sendToChild(socket, "data", data);
-        }
+    console.log(data);
+    if (!data.ticket) {
+      var action = data.action;
+      var botId = data.botId;
+      switch (action) {
+        case "setServer":
+          MC_ADDRESS = data.data.address;
+          MC_PORT = data.data.port;
+          console.log(mcAddress + ":" + mcPort);
+          break;
+        case "start":
+          if (botId != 0) start(botId, mcAddress, mcPort);
+          break;
+        case "kill":
+          botProcesses.get(botId).kill("SIGHUP");
+          break;
+        default:
+          if (sockets.has(botId)) {
+            var socket = sockets.get(botId);
+            sendToChild(socket, "data", data);
+          }
+      }
     }
   });
 
