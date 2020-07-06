@@ -1,4 +1,6 @@
-
+:root {
+  --dark-transition: 0.3s;
+}
 
 .key {
   display: flex;
@@ -13,8 +15,8 @@
   border-color: #007bff;
   color: #007bff;
   font-weight: 400;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 }
 
 .key-wide {
@@ -161,7 +163,6 @@ svg {
     min-width: 70%;
     max-width: 100%;
     flex-grow: 1;
-
   }
 }
 
@@ -172,11 +173,8 @@ svg {
     flex-grow: 1;
     margin: 2.5%;
     margin-top: 0px;
-
-
   }
 }
-
 
 @media only screen and (min-width: 900px) and (max-width: 1200px) {
   .botCard {
@@ -186,10 +184,9 @@ svg {
     margin: 2%;
     margin-top: 0px;
   }
-  .flex-container{
+  .flex-container {
     padding-left: 2%;
     padding-right: 2%;
-
   }
 }
 html.transition,
@@ -200,5 +197,25 @@ html.transition *:after {
   transition-delay: 0 !important;
 }
 
+/* Transition to Dark Mode */
 
+svg {
+  -webkit-transition: all var(--dark-transition) linear;
+  -moz-transition: all var(--dark-transition) linear;
+  -o-transition: all var(--dark-transition) linear;
+  transition: all var(--dark-transition) linear;
+}
 
+.card {
+  -webkit-transition: all var(--dark-transition) linear;
+  -moz-transition: all var(--dark-transition) linear;
+  -o-transition: all var(--dark-transition) linear;
+  transition: all var(--dark-transition) linear;
+}
+
+body {
+  -webkit-transition: all var(--dark-transition) linear;
+  -moz-transition: all var(--dark-transition) linear;
+  -o-transition: all var(--dark-transition) linear;
+  transition: all var(--dark-transition) linear;
+}
