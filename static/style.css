@@ -59,19 +59,37 @@
   margin-top: 0;
 }
 
-.botHead {
+.card-header-bot {
   display: flex;
-  max-width: 60%;
+  flex-wrap: nowrap;
+  padding-right: 12px;
 }
 
+.botHead {
+  display: flex;
+  margin-right: auto;
+}
+.status {
+  margin-left: 2%;
+}
+.toggle-dark {
+  margin-left: auto;
+}
+
+.statusBadge {
+  width: 100px;
+  margin-bottom: 0px;
+  margin-right: auto;
+}
 .botStartStop {
-  position: absolute;
   top: 12px;
   right: 12px;
+  margin-left: 25px;
 }
 .botCard {
-  max-width: 100%;
-  min-width: 30%;
+  max-width: 22%;
+  min-width: 20%;
+  flex-grow: 1;
   margin: 20px;
   margin-top: 0;
 }
@@ -92,7 +110,6 @@
   flex-wrap: wrap;
   padding-left: 20px;
   padding-right: 20px;
-  flex-grow: 4;
   margin-top: 20px;
 }
 .header {
@@ -125,3 +142,62 @@
   background-color: #272c30 !important;
   color: lightgray;
 }
+
+svg {
+  stroke: black;
+  stroke-width: 2px;
+}
+.darkSvg {
+  stroke: lightgray;
+}
+
+.card {
+  background-color: #f8f9fa;
+}
+@media only screen and (max-width: 700px) {
+  /* For mobile phones: */
+  .botCard {
+    min-width: 70%;
+    max-width: 100%;
+    flex-grow: 1;
+
+  }
+}
+
+@media only screen and (min-width: 700px) and (max-width: 900px) {
+  .botCard {
+    min-width: 30%;
+    max-width: 45%;
+    flex-grow: 1;
+    margin: 2.5%;
+    margin-top: 0px;
+
+
+  }
+}
+
+
+@media only screen and (min-width: 900px) and (max-width: 1200px) {
+  .botCard {
+    min-width: 20%;
+    max-width: 29%;
+    flex-grow: 1;
+    margin: 2%;
+    margin-top: 0px;
+  }
+  .flex-container{
+    padding-left: 2%;
+    padding-right: 2%;
+
+  }
+}
+html.transition,
+html.transition *,
+html.transition *:before,
+html.transition *:after {
+  transition: ease-in-out 300ms !important;
+  transition-delay: 0 !important;
+}
+
+
+

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('partials/head') %>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+
+    <div class="flex-container">
+        <% Object.keys(bots).forEach(bot => { %>
+            <%- include('botcard', {bot: bots[bot]}); %>
+          <% }) %>
+    </div>
+  </body>
+    <script src="index.js" type="application/javascript"></script>
+
+</html>

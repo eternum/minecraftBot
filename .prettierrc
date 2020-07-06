@@ -6,7 +6,7 @@
   "endOfLine": "lf",
   "htmlWhitespaceSensitivity": "css",
   "insertPragma": false,
-  "jsxBracketSameLine": false,
+  "jsxBracketSameLine": true,
   "jsxSingleQuote": false,
   "printWidth": 80,
   "proseWrap": "preserve",

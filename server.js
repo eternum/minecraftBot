@@ -1,45 +1,42 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+
 const http = require("http");
 const express = require("express");
 const fs = require("fs");
 const child = require("child_process");
 const ipc = require("node-ipc");
-const WebSocket = require("ws");
 const app = express();
 const passport = require("passport");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const crypto = require("crypto");
+const WebSocket = require("ws");
 // CONFIG SETUP
-const dataManager = require("./dataManager");
+const dataManager = require("./modules/dataManager");
+const authTicket = require("./modules/tickets");
+
 var config = dataManager.loadConfig();
 console.log(config);
 var botFile = config.botFile;
+const SOCKET_PATH = config.ipc.socketPath;
 
 // ENV VARS
 const users = process.env.USERS.split("|");
 const botLogins = process.env.BOT_LOGINS.split("|");
 const botPasswords = process.env.BOT_PASSWORDS.split("|");
 const sessionSecret = process.env.SESSION_SECRET;
-
-const initializePassport = require("./passport-config");
-
-initializePassport(passport, users);
-
-// ipc socket config
-ipc.config.id = "parent";
-ipc.config.retry = 1500;
-ipc.config.silent = true;
-
 const PORT = config.port;
 const HOST = config.host;
-const SOCKET_PATH = config.ipc.socketPath;
+const wss = new WebSocket.Server({ noServer: true });
 
-var botProcesses = new Map();
+const initializePassport = require("./modules/passport-config");
+
+initializePassport(passport, users);
+initializeIPC();
+
 var sockets = new Map();
-var tickets = new Map();
+var botProcesses = new Map();
 var MC_ADDRESS = process.env.MC_ADDRESS;
 var MC_PORT = process.env.MC_PORT;
 
@@ -102,7 +99,11 @@ app.get(/.*.(css)/, function (request, response) {
 });
 
 app.get("/ws", checkAuthenticated, function (request, response) {
-  let ticket = generateTicket(request);
+  console.time("/ws");
+  console.time("Full_Auth");
+  console.time("genTicket");
+  let ticket = authTicket.generateTicket(request);
+  console.timeEnd("genTicket");
   response.status(200);
   response.set({
     "Access-Control-Allow-Headers": "*", // for getting around cors rules
@@ -110,6 +111,7 @@ app.get("/ws", checkAuthenticated, function (request, response) {
   });
   response.send(ticket);
   response.end();
+  console.timeEnd("/ws");
 });
 function sendResponse(response, file, fileType) {
   if (file != "") {
@@ -162,41 +164,6 @@ function return404(response) {
   response.end();
 }
 
-function generateTicket(request) {
-  let ticket = crypto.randomBytes(128).toString("hex");
-  let ticketHash = getHash(ticket, "hex");
-  let expiryDate = 10000 + Date.now();
-  let data = {
-    ticket: ticket,
-    agent: request.headers["user-agent"],
-    session: request.session,
-    auth: request.isAuthenticated(),
-    expires: expiryDate,
-  };
-  tickets.set(ticketHash, data);
-  setTimeout(() => {
-    tickets.delete(ticketHash);
-  }, 30000);
-  return ticket;
-}
-
-function verifyTicket(ticket, request) {
-  let ticketHash = getHash(ticket);
-  if (!tickets.has(ticketHash)) return false;
-  let info = tickets.get(ticketHash);
-  if (!(Date.now() < info.expires)) return false;
-  console.log(Date.now() - (info.expires - 10000));
-  let ticketMatch = ticket == info.ticket;
-  let userMatch = request.headers["user-agent"] == info.agent;
-  let auth = info.auth;
-  return ticketMatch && userMatch && auth;
-}
-function getHash(string) {
-  let hash = crypto.createHash("sha1");
-  hash.update(string);
-  return hash.digest("hex");
-}
-
 // initialize http server
 console.log("starting server");
 const server = http.createServer(app);
@@ -209,67 +176,10 @@ server.listen(PORT, HOST, () => {
 server.on("close", function () {
   console.log("Connection Closed");
 });
-
-// setup ipc server
-ipc.serve(SOCKET_PATH, function () {
-  ipc.server.on("connect", () => {
-    console.log("Connected");
-  });
-
-  ipc.server.on("started", (data, socket) => {
-    if (!sockets.has(data.botId)) {
-      console.log("adding socket");
-      sockets.set(data.botId, socket);
-    }
-    console.log(data);
-    broadcast(data);
-  });
-
-  ipc.server.on("data", (data, socket) => {
-    broadcast(data);
-  });
-
-  ipc.server.on("socket.disconnected", function (socket, destroyedSocketID) {
-    ipc.log("client " + destroyedSocketID + " has disconnected!");
-  });
-});
-
 // start new bot with bot id
-function start(botId) {
-  console.log("[INFO]: New Bot created and started");
-  var username = botLogins[botId];
-  var password = botPasswords[botId];
-  var botProcess = child.execFile(
-    "node",
-    [botFile, botId, MC_ADDRESS, MC_PORT, username, password],
-    (error, stdout, stderr) => {
-      if (error) {
-        throw error;
-      }
-      console.log(stdout);
-    }
-  );
-  botProcesses.set(botId, botProcess);
-
-  botProcess.on("exit", (code, signal) => {
-    console.log("child process exited code: " + code);
-  });
-}
-// create new websocket server
-const wss = new WebSocket.Server({ noServer: true });
 
 // this authenticates the websocket
-server.on("upgrade", function upgrade(request, socket, head) {
-  let ticket = request.url.slice(request.url.indexOf("=") + 1);
-  if (verifyTicket(ticket, request)) {
-    wss.handleUpgrade(request, socket, head, function done(ws) {
-      wss.emit("connection", ws, request);
-    });
-  } else {
-    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
-    socket.destroy();
-  }
-});
+server.on("upgrade", handleUpgrade);
 
 wss.on("connection", function connection(ws, req) {
   console.log("[INFO]: New Connection From: " + req.socket.remoteAddress);
@@ -292,10 +202,7 @@ wss.on("connection", function connection(ws, req) {
           botProcesses.get(botId).kill("SIGHUP");
           break;
         default:
-          if (sockets.has(botId)) {
-            var socket = sockets.get(botId);
-            sendToChild(socket, "data", data);
-          }
+          sendToChild(botId, "data", data);
       }
     }
   });
@@ -312,17 +219,87 @@ wss.on("connection", function connection(ws, req) {
   });
 });
 
+function start(botId) {
+  console.log("[INFO]: New Bot created and started");
+  var username = botLogins[botId];
+  var password = botPasswords[botId];
+  var botProcess = child.execFile(
+    "node",
+    [botFile, botId, MC_ADDRESS, MC_PORT, username, password],
+    (error, stdout, stderr) => {
+      if (error) {
+        throw error;
+      }
+      console.log(stdout);
+    }
+  );
+  botProcesses.set(botId, botProcess);
+
+  botProcess.on("exit", (code, signal) => {
+    console.log("child process exited code: " + code);
+  });
+}
+
+function handleUpgrade(request, socket, head) {
+  let ticket = request.url.slice(request.url.indexOf("=") + 1);
+  console.time("verification");
+  let verified = authTicket.verifyTicket(ticket, request);
+  console.timeEnd("verification");
+  if (verified) {
+    wss.handleUpgrade(request, socket, head, function done(ws) {
+      console.timeEnd("Full_Auth");
+      wss.emit("connection", ws, request);
+    });
+  } else {
+    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+    socket.destroy();
+  }
+}
+var sockets = new Map();
+
+function initializeIPC() {
+  fs.exists(SOCKET_PATH, (exists) => {
+    if (exists) {
+      fs.unlink(SOCKET_PATH, () => {
+        return;
+      });
+    }
+  });
+
+  ipc.config.id = "parent";
+  ipc.config.retry = 1500;
+  ipc.config.silent = true;
+  ipc.serve(SOCKET_PATH);
+  ipc.server.start();
+
+  ipc.server.on("start", ipcListen);
+}
 function ipcListen() {
-  ipc.server.on("connect", () => {
+  ipc.server.on("connect", (socket) => {
+    console.log(socket);
     console.log("Connected");
   });
 
   ipc.server.on("started", (data, socket) => {
+    console.log("adding socket");
     sockets.set(data.botId, socket);
+    console.log(data);
+    broadcast(data);
   });
   ipc.server.on("data", (data, socket) => {
     broadcast(data);
   });
+  ipc.server.on("socket.disconnected", function (socket, destroyedSocketID) {
+    socket.destroy();
+    console.log("socket disconnected");
+    ipc.log("client " + destroyedSocketID + " has disconnected!");
+  });
+}
+function sendToChild(botId, event, data) {
+  if (sockets.has(botId)) {
+    sockets.get(botId);
+    ipc.server.emit(socket, event, data);
+  }
 }
 
 function broadcast(message) {
@@ -333,8 +310,6 @@ function broadcast(message) {
   });
 }
 
-function sendToChild(socket, event, data) {
-  ipc.server.emit(socket, event, data);
-}
-
-ipc.server.start();
+module.exports = {
+  broadcast,
+};

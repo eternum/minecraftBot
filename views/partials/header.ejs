@@ -1,0 +1,22 @@
+<div class="header">
+    <h1>Bot Controller</h1>
+    <div class="toggle-dark">
+      <div class="toggle">
+        <input
+          type="button"
+          class="btn btn-primary"
+          value="toggle theme"
+          onclick="toggleTheme();"
+        />
+        <label for="toggle"></label>
+      </div>
+    </div>
+    <div class="status d-none d-sm-block">
+      <div class="card bg-light">
+        <div class="card-header">
+          WebSocket:
+          <span id="serverStatus" class="badge badge-danger">Offline</span>
+        </div>
+      </div>
+    </div>
+  </div>

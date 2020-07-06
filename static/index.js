@@ -4,12 +4,10 @@ var connected = false;
 var keys = { w: false, a: false, s: false, d: false, space: false };
 var ticket;
 var botSelected = 0;
+var timeOne = 0;
+var timeTwo = 0;
 
 // listeners
-document.getElementById("botSelected").onchange = function (event) {
-  botSelected = getCurrentBot();
-  console.log(botSelected);
-};
 
 document.addEventListener(
   "keydown",
@@ -94,6 +92,8 @@ document.addEventListener(
 // looks like a function but is actually just to trigger the listeners after the server is online
 function listenSocket() {
   socketserver.onopen = function (event) {
+    timeTwo = performance.now();
+    console.log(`websocket started in ${timeTwo - timeOne} milliseconds.`);
     console.log("connected");
     connected = true;
     serverOnline(true);
@@ -216,6 +216,8 @@ function closeWebSocket() {
   socketserver.close();
 }
 async function startWebSocket() {
+  timeOne = performance.now();
+  let t0 = performance.now();
   console.log("Authenticating");
 
   getTicket().then((ticket) => {
@@ -225,6 +227,8 @@ async function startWebSocket() {
     );
     listenSocket();
   });
+  let t1 = performance.now();
+  console.log(`Call to startWebsocket took ${t1 - t0} milliseconds.`);
 }
 
 function toggleTheme() {
@@ -238,6 +242,16 @@ function toggleTheme() {
       .getElementsByClassName("card")
       .item(index)
       .classList.toggle("bg-dark");
+  }
+  for (
+    let index = 0;
+    index < document.getElementsByTagName("svg").length;
+    index++
+  ) {
+    document
+      .getElementsByTagName("svg")
+      .item(index)
+      .classList.toggle("darkSvg");
   }
 }
 
@@ -283,5 +297,8 @@ function keylogger(keys) {
   if (!keys.space)
     document.getElementById("spacebar").classList.remove("keypressed");
 }
-
+feather.replace({ id: "icon" });
+if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+  toggleTheme();
+}
 setTimeout(() => startWebSocket(), 100);
