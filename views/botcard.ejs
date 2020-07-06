@@ -1,5 +1,5 @@
 <!-- prettier-ignore -->
-<div class="botCard">
+<div class="botCard" id=<%-bot.name%> data-ip=<%-bot.server.ip%> data-port=<%-bot.server.port%>     >
   <div class="card">
     <div class="card-header card-header-bot">
       <div class="botHead">
@@ -20,7 +20,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-sm">
-          <button type="button" class="btn">
+          <button type="button" class="btn" data-toggle="modal" data-target="#serverModal" data-name=<%- bot.name %> >
             <i data-feather="settings"></i>
           </button>
         </div>

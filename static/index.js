@@ -301,4 +301,17 @@ feather.replace({ id: "icon" });
 if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
   toggleTheme();
 }
+
+$("#serverModal").on("show.bs.modal", function (event) {
+  var button = $(event.relatedTarget);
+  var name = button.data("name");
+  var ip = $("#" + name).data("ip");
+  var port = $("#" + name).data("port");
+  console.log(ip + ":" + port);
+  var modal = $(this);
+  modal.find(".modal-title").text(name + " Settings");
+  modal.find("#server").val(ip);
+  modal.find("#port").val(port);
+});
+
 setTimeout(() => startWebSocket(), 100);

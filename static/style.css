@@ -67,6 +67,7 @@
 
 .botHead {
   display: flex;
+  flex-flow: row wrap;
   margin-right: auto;
 }
 .status {

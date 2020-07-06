@@ -8,6 +8,10 @@ var bots = {
     health: 11,
     hunger: 15,
     coords: "0 1 0",
+    server: {
+      ip: "mc.hackclub.com",
+      port: "25565",
+    },
   },
   boomer: {
     name: "boomer",
@@ -15,6 +19,10 @@ var bots = {
     health: 21,
     hunger: 45,
     coords: "0 3 0",
+    server: {
+      ip: "localhost",
+      port: "12",
+    },
   },
   bot1: {
     name: "bot1",
@@ -22,6 +30,10 @@ var bots = {
     health: 20,
     hunger: 20,
     coords: "0 0 0",
+    server: {
+      ip: "localhost",
+      port: "121312",
+    },
   },
   bot2: {
     name: "bot2",
@@ -29,6 +41,10 @@ var bots = {
     health: 20,
     hunger: 20,
     coords: "0 0 0",
+    server: {
+      ip: "mc.google.com",
+      port: "122333",
+    },
   },
   bot3: {
     name: "bot3",
@@ -36,6 +52,10 @@ var bots = {
     health: 20,
     hunger: 20,
     coords: "0 0 0",
+    server: {
+      ip: "google.hackclub.com",
+      port: "25555565",
+    },
   },
 };
 var botURLS = ["/nickbot", "/boomer"];

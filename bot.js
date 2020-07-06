@@ -1,7 +1,7 @@
 const mineflayer = require("mineflayer");
 const ipc = require("node-ipc");
 const v = require("vec3");
-const dataManager = require("./dataManager");
+const dataManager = require("./modules/dataManager");
 var config = dataManager.loadConfig();
 
 const botId = process.argv[2];
