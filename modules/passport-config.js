@@ -1,7 +1,7 @@
-const GitHubStrategy = require('passport-github').Strategy;
+const GitHubStrategy = require("passport-github").Strategy;
 
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
 function initialize(passport, users) {
@@ -15,10 +15,10 @@ function initialize(passport, users) {
       function (accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
           if (users.includes(profile.username)) {
-            console.log('approved');
+            console.log("approved");
             return done(null, profile);
           }
-          console.log('not approved');
+          console.log("not approved");
           return done(null, false);
         });
       }
