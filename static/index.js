@@ -1,5 +1,5 @@
 /// WebSocket And stuff
-const url = "http://localhost:3000";
+const url = 'http://localhost:3000';
 let connected = false;
 const keys = { w: false, a: false, s: false, d: false, space: false };
 let ticket;
@@ -10,36 +10,36 @@ let timeTwo = 0;
 // listeners
 
 document.addEventListener(
-  "keydown",
+  'keydown',
   (event) => {
-    let key = "";
+    let key = '';
     const keyName = event.code;
     switch (keyName) {
-      case "KeyW":
+      case 'KeyW':
         keys.w = true;
-        key = "forward";
+        key = 'forward';
         break;
-      case "KeyA":
+      case 'KeyA':
         keys.a = true;
-        key = "right";
+        key = 'right';
         break;
-      case "KeyS":
+      case 'KeyS':
         keys.s = true;
-        key = "back";
+        key = 'back';
         break;
-      case "KeyD":
+      case 'KeyD':
         keys.d = true;
-        key = "left";
+        key = 'left';
         break;
-      case "Space":
+      case 'Space':
         keys.space = true;
-        key = "jump";
+        key = 'jump';
         break;
     }
-    if (key != "") {
+    if (key != '') {
       keylogger(keys);
       send({
-        action: "move",
+        action: 'move',
         botId: getCurrentBot(),
         data: { operation: key, state: true },
       });
@@ -49,38 +49,38 @@ document.addEventListener(
 );
 
 document.addEventListener(
-  "keyup",
+  'keyup',
   (event) => {
     if (event.repeat) {
       return;
     }
     const keyName = event.code;
     switch (keyName) {
-      case "KeyW":
+      case 'KeyW':
         keys.w = false;
-        key = "forward";
+        key = 'forward';
         break;
-      case "KeyA":
+      case 'KeyA':
         keys.a = false;
-        key = "right";
+        key = 'right';
         break;
-      case "KeyS":
+      case 'KeyS':
         keys.s = false;
-        key = "back";
+        key = 'back';
         break;
-      case "KeyD":
+      case 'KeyD':
         keys.d = false;
-        key = "left";
+        key = 'left';
         break;
-      case "Space":
+      case 'Space':
         keys.space = false;
-        key = "jump";
+        key = 'jump';
         break;
     }
-    if (key != "") {
+    if (key != '') {
       keylogger(keys);
       send({
-        action: "move",
+        action: 'move',
         botId: getCurrentBot(),
         data: { operation: key, state: false },
       });
@@ -94,7 +94,7 @@ function listenSocket() {
   socketserver.onopen = function (event) {
     timeTwo = performance.now();
     console.log(`websocket started in ${timeTwo - timeOne} milliseconds.`);
-    console.log("connected");
+    console.log('connected');
     connected = true;
     serverOnline(true);
   };
@@ -103,22 +103,22 @@ function listenSocket() {
     const message = JSON.parse(event.data);
     const { botId } = message;
     switch (message.action) {
-      case "coords":
+      case 'coords':
         setCoords(message.data, botId);
         break;
-      case "health":
+      case 'health':
         setHealth(message.data, botId);
         break;
-      case "hunger":
+      case 'hunger':
         setHunger(message.data, botId);
         break;
-      case "started":
+      case 'started':
         botOnline(message.action, botId);
         break;
     }
   };
   socketserver.onclose = function (event) {
-    console.log("connection closed");
+    console.log('connection closed');
     serverOnline(false);
   };
 }
@@ -129,10 +129,10 @@ async function getTicket() {
   return new Promise((resolve, reject) => {
     resolve(
       fetch(`${url}/ws`, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Access-Control-Allow-Headers": "*", // for getting around cors rules
-          "Access-Control-Allow-Origin": "*",
+          'Access-Control-Allow-Headers': '*', // for getting around cors rules
+          'Access-Control-Allow-Origin': '*',
           Cookie: document.cookie,
         },
       }).then((data) => data.text())
@@ -145,56 +145,56 @@ function kill() {
   // this is only neccissary to use in circumstances in which the connection between the server and the bot process is broken.
 
   send({
-    action: "kill",
+    action: 'kill',
     botId: getCurrentBot(),
   });
 }
 
 function setServer(address, port) {
-  var address = document.getElementById("server").value;
-  var port = document.getElementById("port").value;
+  var address = document.getElementById('server').value;
+  var port = document.getElementById('port').value;
   const data = { address, port };
 
   send({
-    action: "setServer",
+    action: 'setServer',
     botId: getCurrentBot(),
     data,
   });
 }
 function stopBot() {
   send({
-    action: "stop",
+    action: 'stop',
     botId: getCurrentBot(),
   });
 }
 function startBot() {
   send({
-    action: "start",
+    action: 'start',
     botId: getCurrentBot(),
   });
 }
 
 function setHunger(message, botId) {
   if (botId == botSelected) {
-    document.getElementById("hunger").innerHTML = message;
+    document.getElementById('hunger').innerHTML = message;
   }
 }
 
 function setCoords(message, botId) {
   if (botId == botSelected) {
-    document.getElementById("coords").innerHTML = `${Math.round(
+    document.getElementById('coords').innerHTML = `${Math.round(
       message.x
     )} ${Math.round(message.y)} ${Math.round(message.z)}`;
   }
 }
 function setHealth(message) {
   if (botId == botSelected) {
-    document.getElementById("health").innerHTML = message;
+    document.getElementById('health').innerHTML = message;
   }
 }
 
 function getCurrentBot() {
-  return document.getElementById("botSelected").value;
+  return document.getElementById('botSelected').value;
 }
 
 /*
@@ -215,12 +215,12 @@ function closeWebSocket() {
 async function startWebSocket() {
   timeOne = performance.now();
   const t0 = performance.now();
-  console.log("Authenticating");
+  console.log('Authenticating');
 
   getTicket().then((ticket) => {
     socketserver = new WebSocket(
       `ws://0.0.0.0:3000/?ticket=${ticket}`,
-      "protocolOne"
+      'protocolOne'
     );
     listenSocket();
   });
@@ -229,86 +229,86 @@ async function startWebSocket() {
 }
 
 function toggleTheme() {
-  document.body.classList.toggle("dark-body");
+  document.body.classList.toggle('dark-body');
   for (
     let index = 0;
-    index < document.getElementsByClassName("card").length;
+    index < document.getElementsByClassName('card').length;
     index++
   ) {
     document
-      .getElementsByClassName("card")
+      .getElementsByClassName('card')
       .item(index)
-      .classList.toggle("bg-dark");
+      .classList.toggle('bg-dark');
   }
   for (
     let index = 0;
-    index < document.getElementsByTagName("svg").length;
+    index < document.getElementsByTagName('svg').length;
     index++
   ) {
     document
-      .getElementsByTagName("svg")
+      .getElementsByTagName('svg')
       .item(index)
-      .classList.toggle("darkSvg");
+      .classList.toggle('darkSvg');
   }
 }
 
 function serverOnline(state) {
-  const status = document.getElementById("serverStatus");
+  const status = document.getElementById('serverStatus');
   if (state) {
-    status.setAttribute("class", "badge badge-success");
-    status.innerHTML = "Online";
+    status.setAttribute('class', 'badge badge-success');
+    status.innerHTML = 'Online';
   } else {
-    status.setAttribute("class", "badge badge-danger");
-    status.innerHTML = "Offline";
+    status.setAttribute('class', 'badge badge-danger');
+    status.innerHTML = 'Offline';
   }
 }
 function botOnline(state) {
-  const status = document.getElementById("botStatus");
+  const status = document.getElementById('botStatus');
 
   switch (state) {
-    case "started":
-      status.setAttribute("class", "badge badge-success");
-      status.innerHTML = "Connected";
+    case 'started':
+      status.setAttribute('class', 'badge badge-success');
+      status.innerHTML = 'Connected';
       break;
-    case "stopped":
-      status.setAttribute("class", "badge badge-danger");
+    case 'stopped':
+      status.setAttribute('class', 'badge badge-danger');
       break;
 
-    case "starting":
-      status.setAttribute("class", "badge badge-primary");
-      status.innerHTML = "starting";
+    case 'starting':
+      status.setAttribute('class', 'badge badge-primary');
+      status.innerHTML = 'starting';
   }
 }
 
 function keylogger(keys) {
-  if (keys.w) document.getElementById("w").classList.add("keypressed");
-  if (keys.a) document.getElementById("a").classList.add("keypressed");
-  if (keys.s) document.getElementById("s").classList.add("keypressed");
-  if (keys.d) document.getElementById("d").classList.add("keypressed");
+  if (keys.w) document.getElementById('w').classList.add('keypressed');
+  if (keys.a) document.getElementById('a').classList.add('keypressed');
+  if (keys.s) document.getElementById('s').classList.add('keypressed');
+  if (keys.d) document.getElementById('d').classList.add('keypressed');
   if (keys.space)
-    document.getElementById("spacebar").classList.add("keypressed");
-  if (!keys.w) document.getElementById("w").classList.remove("keypressed");
-  if (!keys.a) document.getElementById("a").classList.remove("keypressed");
-  if (!keys.s) document.getElementById("s").classList.remove("keypressed");
-  if (!keys.d) document.getElementById("d").classList.remove("keypressed");
+    document.getElementById('spacebar').classList.add('keypressed');
+  if (!keys.w) document.getElementById('w').classList.remove('keypressed');
+  if (!keys.a) document.getElementById('a').classList.remove('keypressed');
+  if (!keys.s) document.getElementById('s').classList.remove('keypressed');
+  if (!keys.d) document.getElementById('d').classList.remove('keypressed');
   if (!keys.space)
-    document.getElementById("spacebar").classList.remove("keypressed");
+    document.getElementById('spacebar').classList.remove('keypressed');
 }
-feather.replace({ id: "icon" });
-if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+feather.replace({ id: 'icon' });
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
   toggleTheme();
 }
 
-$("#serverModal").on("show.bs.modal", function (event) {
+$('#serverModal').on('show.bs.modal', function (event) {
   const button = $(event.relatedTarget);
-  const name = button.data("name");
-  const ip = $(`#${name}`).data("ip");
-  const port = $(`#${name}`).data("port");
+  const name = button.data('name');
+  const ip = $(`#${name}`).data('ip');
+  const port = $(`#${name}`).data('port');
   console.log(`${ip}:${port}`);
   const modal = $(this);
-  modal.find(".modal-title").text(`${name} Settings`);
-  modal.find("#server").val(ip);
-  modal.find("#port").val(port);
+  modal.find('.modal-title').text(`${name} Settings`);
+  modal.find('#server').val(ip);
+  modal.find('#port').val(port);
 });
 
 setTimeout(() => startWebSocket(), 100);
