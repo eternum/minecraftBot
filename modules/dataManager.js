@@ -2,8 +2,7 @@ require("dotenv").config();
 
 const yaml = require("js-yaml");
 const fs = require("fs");
-
-let config;
+var config;
 
 const configFileLocation = process.env.CONFIG_FILE
   ? process.env.CONFIG_FILE

@@ -1,5 +1,4 @@
 const GitHubStrategy = require("passport-github").Strategy;
-
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
@@ -17,9 +16,10 @@ function initialize(passport, users) {
           if (users.includes(profile.username)) {
             console.log("approved");
             return done(null, profile);
+          } else {
+            console.log("not approved");
+            return done(null, false);
           }
-          console.log("not approved");
-          return done(null, false);
         });
       }
     )

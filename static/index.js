@@ -1,18 +1,18 @@
 /// WebSocket And stuff
 const url = "http://localhost:3000";
-let connected = false;
-const keys = { w: false, a: false, s: false, d: false, space: false };
-let ticket;
-const botSelected = 0;
-let timeOne = 0;
-let timeTwo = 0;
+var connected = false;
+var keys = { w: false, a: false, s: false, d: false, space: false };
+var ticket;
+var botSelected = 0;
+var timeOne = 0;
+var timeTwo = 0;
 
 // listeners
 
 document.addEventListener(
   "keydown",
   (event) => {
-    let key = "";
+    var key = "";
     const keyName = event.code;
     switch (keyName) {
       case "KeyW":
@@ -100,8 +100,8 @@ function listenSocket() {
   };
   socketserver.onmessage = function (event) {
     console.log(event.data);
-    const message = JSON.parse(event.data);
-    const { botId } = message;
+    var message = JSON.parse(event.data);
+    var botId = message.botId;
     switch (message.action) {
       case "coords":
         setCoords(message.data, botId);
@@ -128,7 +128,7 @@ function listenSocket() {
 async function getTicket() {
   return new Promise((resolve, reject) => {
     resolve(
-      fetch(`${url}/ws`, {
+      fetch(url + "/ws", {
         method: "GET",
         headers: {
           "Access-Control-Allow-Headers": "*", // for getting around cors rules
@@ -153,12 +153,12 @@ function kill() {
 function setServer(address, port) {
   var address = document.getElementById("server").value;
   var port = document.getElementById("port").value;
-  const data = { address, port };
+  var data = { address: address, port: port };
 
   send({
     action: "setServer",
     botId: getCurrentBot(),
-    data,
+    data: data,
   });
 }
 function stopBot() {
@@ -182,9 +182,12 @@ function setHunger(message, botId) {
 
 function setCoords(message, botId) {
   if (botId == botSelected) {
-    document.getElementById("coords").innerHTML = `${Math.round(
-      message.x
-    )} ${Math.round(message.y)} ${Math.round(message.z)}`;
+    document.getElementById("coords").innerHTML =
+      Math.round(message.x) +
+      " " +
+      Math.round(message.y) +
+      " " +
+      Math.round(message.z);
   }
 }
 function setHealth(message) {
@@ -214,17 +217,17 @@ function closeWebSocket() {
 }
 async function startWebSocket() {
   timeOne = performance.now();
-  const t0 = performance.now();
+  let t0 = performance.now();
   console.log("Authenticating");
 
   getTicket().then((ticket) => {
     socketserver = new WebSocket(
-      `ws://0.0.0.0:3000/?ticket=${ticket}`,
+      "ws://0.0.0.0:3000/?ticket=" + ticket,
       "protocolOne"
     );
     listenSocket();
   });
-  const t1 = performance.now();
+  let t1 = performance.now();
   console.log(`Call to startWebsocket took ${t1 - t0} milliseconds.`);
 }
 
@@ -253,7 +256,7 @@ function toggleTheme() {
 }
 
 function serverOnline(state) {
-  const status = document.getElementById("serverStatus");
+  var status = document.getElementById("serverStatus");
   if (state) {
     status.setAttribute("class", "badge badge-success");
     status.innerHTML = "Online";
@@ -263,7 +266,7 @@ function serverOnline(state) {
   }
 }
 function botOnline(state) {
-  const status = document.getElementById("botStatus");
+  var status = document.getElementById("botStatus");
 
   switch (state) {
     case "started":
@@ -300,13 +303,13 @@ if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
 }
 
 $("#serverModal").on("show.bs.modal", function (event) {
-  const button = $(event.relatedTarget);
-  const name = button.data("name");
-  const ip = $(`#${name}`).data("ip");
-  const port = $(`#${name}`).data("port");
-  console.log(`${ip}:${port}`);
-  const modal = $(this);
-  modal.find(".modal-title").text(`${name} Settings`);
+  var button = $(event.relatedTarget);
+  var name = button.data("name");
+  var ip = $("#" + name).data("ip");
+  var port = $("#" + name).data("port");
+  console.log(ip + ":" + port);
+  var modal = $(this);
+  modal.find(".modal-title").text(name + " Settings");
   modal.find("#server").val(ip);
   modal.find("#port").val(port);
 });

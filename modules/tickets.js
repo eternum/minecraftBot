@@ -1,12 +1,12 @@
 const { randomBytes, createHash } = require("crypto");
 
-const tickets = new Map();
+var tickets = new Map();
 function generateTicket(request) {
-  const ticket = randomBytes(128).toString("hex");
-  const ticketHash = getHash(ticket, "hex");
-  const expiryDate = 10000 + Date.now();
-  const data = {
-    ticket,
+  let ticket = randomBytes(128).toString("hex");
+  let ticketHash = getHash(ticket, "hex");
+  let expiryDate = 10000 + Date.now();
+  let data = {
+    ticket: ticket,
     agent: request.headers["user-agent"],
     session: request.session,
     auth: request.isAuthenticated(),
@@ -20,17 +20,17 @@ function generateTicket(request) {
 }
 
 function verifyTicket(ticket, request) {
-  const ticketHash = getHash(ticket);
+  let ticketHash = getHash(ticket);
   if (!tickets.has(ticketHash)) return false;
-  const info = tickets.get(ticketHash);
+  let info = tickets.get(ticketHash);
   if (!(Date.now() < info.expires)) return false;
-  const ticketMatch = ticket == info.ticket;
-  const userMatch = request.headers["user-agent"] == info.agent;
-  const { auth } = info;
+  let ticketMatch = ticket == info.ticket;
+  let userMatch = request.headers["user-agent"] == info.agent;
+  let auth = info.auth;
   return ticketMatch && userMatch && auth;
 }
 function getHash(string) {
-  const hash = createHash("sha1");
+  let hash = createHash("sha1");
   hash.update(string);
   return hash.digest("hex");
 }

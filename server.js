@@ -7,7 +7,6 @@ const express = require("express");
 const fs = require("fs");
 const child = require("child_process");
 const ipc = require("node-ipc");
-
 const app = express();
 const passport = require("passport");
 const session = require("express-session");
@@ -17,9 +16,9 @@ const WebSocket = require("ws");
 const dataManager = require("./modules/dataManager");
 const authTicket = require("./modules/tickets");
 
-const config = dataManager.loadConfig();
+var config = dataManager.loadConfig();
 console.log(config);
-const { botFile } = config;
+var botFile = config.botFile;
 const SOCKET_PATH = config.ipc.socketPath;
 
 // ENV VARS
@@ -37,9 +36,9 @@ initializePassport(passport, users);
 initializeIPC();
 
 var sockets = new Map();
-const botProcesses = new Map();
-let { MC_ADDRESS } = process.env;
-let { MC_PORT } = process.env;
+var botProcesses = new Map();
+var MC_ADDRESS = process.env.MC_ADDRESS;
+var MC_PORT = process.env.MC_PORT;
 
 // EXPRESS STUFF
 app.set("trust proxy", 1); // trust first proxy
@@ -103,7 +102,7 @@ app.get("/ws", checkAuthenticated, function (request, response) {
   console.time("/ws");
   console.time("Full_Auth");
   console.time("genTicket");
-  const ticket = authTicket.generateTicket(request);
+  let ticket = authTicket.generateTicket(request);
   console.timeEnd("genTicket");
   response.status(200);
   response.set({
@@ -119,7 +118,7 @@ function sendResponse(response, file, fileType) {
     fs.readFile(file, (err, data) => {
       // error handler
       if (err) {
-        const message = `[ERROR]: ${err}`;
+        var message = "[ERROR]: " + err;
         console.log(message); // logs error message to console
         return404(response); // sends a 404 resource not found to the client
       } else {
@@ -172,7 +171,7 @@ const server = http.createServer(app);
 // set http server listen ports
 
 server.listen(PORT, HOST, () => {
-  console.log(`[INFO]: https server listening at: ${HOST}:${PORT}`);
+  console.log("[INFO]: https server listening at: " + HOST + ":" + PORT);
 });
 server.on("close", function () {
   console.log("Connection Closed");
@@ -183,18 +182,18 @@ server.on("close", function () {
 server.on("upgrade", handleUpgrade);
 
 wss.on("connection", function connection(ws, req) {
-  console.log(`[INFO]: New Connection From: ${req.socket.remoteAddress}`);
+  console.log("[INFO]: New Connection From: " + req.socket.remoteAddress);
 
   ws.on("message", function incoming(message) {
-    const data = JSON.parse(message);
+    var data = JSON.parse(message);
     if (!data.ticket) {
-      const { action } = data;
-      const { botId } = data;
+      var action = data.action;
+      var botId = data.botId;
       switch (action) {
         case "setServer":
           MC_ADDRESS = data.data.address;
           MC_PORT = data.data.port;
-          console.log(`${MC_ADDRESS}:${MC_ADDRESS}`);
+          console.log(MC_ADDRESS + ":" + MC_ADDRESS);
           break;
         case "start":
           if (botId != 0) start(botId, MC_ADDRESS, MC_PORT);
@@ -210,16 +209,21 @@ wss.on("connection", function connection(ws, req) {
 
   ws.on("close", function incoming(code, reason) {
     console.log(
-      `[INFO]: Connection Closed By: ${req.socket.remoteAddress} Code: ${code} ${reason}`
+      "[INFO]: Connection Closed By: " +
+        req.socket.remoteAddress +
+        " Code: " +
+        code +
+        " " +
+        reason
     );
   });
 });
 
 function start(botId) {
   console.log("[INFO]: New Bot created and started");
-  const username = botLogins[botId];
-  const password = botPasswords[botId];
-  const botProcess = child.execFile(
+  var username = botLogins[botId];
+  var password = botPasswords[botId];
+  var botProcess = child.execFile(
     "node",
     [botFile, botId, MC_ADDRESS, MC_PORT, username, password],
     (error, stdout, stderr) => {
@@ -232,14 +236,14 @@ function start(botId) {
   botProcesses.set(botId, botProcess);
 
   botProcess.on("exit", (code, signal) => {
-    console.log(`child process exited code: ${code}`);
+    console.log("child process exited code: " + code);
   });
 }
 
 function handleUpgrade(request, socket, head) {
-  const ticket = request.url.slice(request.url.indexOf("=") + 1);
+  let ticket = request.url.slice(request.url.indexOf("=") + 1);
   console.time("verification");
-  const verified = authTicket.verifyTicket(ticket, request);
+  let verified = authTicket.verifyTicket(ticket, request);
   console.timeEnd("verification");
   if (verified) {
     wss.handleUpgrade(request, socket, head, function done(ws) {
@@ -256,7 +260,9 @@ var sockets = new Map();
 function initializeIPC() {
   fs.exists(SOCKET_PATH, (exists) => {
     if (exists) {
-      fs.unlink(SOCKET_PATH, () => {});
+      fs.unlink(SOCKET_PATH, () => {
+        return;
+      });
     }
   });
 
@@ -286,7 +292,7 @@ function ipcListen() {
   ipc.server.on("socket.disconnected", function (socket, destroyedSocketID) {
     socket.destroy();
     console.log("socket disconnected");
-    ipc.log(`client ${destroyedSocketID} has disconnected!`);
+    ipc.log("client " + destroyedSocketID + " has disconnected!");
   });
 }
 function sendToChild(botId, event, data) {
