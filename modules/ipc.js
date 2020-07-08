@@ -1,7 +1,8 @@
-const broadcast = require("../server").broadcast;
 const ipc = require("node-ipc");
-const dataManager = require("./dataManager");
 const fs = require("fs");
+const { broadcast } = require("../server");
+const dataManager = require("./dataManager");
+
 const config = dataManager.loadConfig();
 
 module.exports = {

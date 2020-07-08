@@ -1,7 +1,8 @@
 // load the things we need
 const express = require("express");
+
 const app = express();
-var bots = {
+const bots = {
   nickbot: {
     name: "nickbot",
     status: "Loading",
@@ -58,7 +59,7 @@ var bots = {
     },
   },
 };
-var botURLS = ["/nickbot", "/boomer"];
+const botURLS = ["/nickbot", "/boomer"];
 
 // set the view engine to ejs
 app.set("view engine", "ejs");
@@ -70,7 +71,7 @@ app.set("view engine", "ejs");
 app.use(express.static("static"));
 app.get("/", function (req, res) {
   res.render("index", {
-    bots: bots,
+    bots,
   });
 });
 

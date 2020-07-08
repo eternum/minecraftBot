@@ -2,15 +2,16 @@ const mineflayer = require("mineflayer");
 const ipc = require("node-ipc");
 const v = require("vec3");
 const dataManager = require("./modules/dataManager");
-var config = dataManager.loadConfig();
+
+const config = dataManager.loadConfig();
 
 const botId = process.argv[2];
 const server = process.argv[3];
 const port = process.argv[4];
-const username = process.argv[5] ? process.argv[5] : "bot_" + botId;
+const username = process.argv[5] ? process.argv[5] : `bot_${botId}`;
 const password = process.argv[6] ? process.argv[6] : null;
 
-var socketPath = config.ipc.socketPath;
+const { socketPath } = config.ipc;
 
 ipc.config.id = "parent";
 ipc.config.appspace = "";
@@ -45,9 +46,9 @@ ipc.connectTo("parent", socketPath, function () {
 
 const bot = mineflayer.createBot({
   host: server,
-  port: port,
-  username: username,
-  password: password,
+  port,
+  username,
+  password,
 });
 
 let mcData;
@@ -56,18 +57,18 @@ bot.once("inject_allowed", () => {
 });
 
 function intitiateConnection(botId) {
-  var message = { action: "started", botId: botId };
+  const message = { action: "started", botId };
   send("started", message);
 }
 
 function sendCoordinates() {
   if (bot != null) {
-    var position = bot.entity.position;
+    const { position } = bot.entity;
 
-    var json = {
+    const json = {
       action: "coords",
       data: { x: position.x, y: position.y, z: position.z },
-      botId: botId,
+      botId,
     };
     send("data", json);
   }
@@ -75,18 +76,18 @@ function sendCoordinates() {
 
 function sendHealth() {
   if (bot != null) {
-    var health = bot.health;
+    const { health } = bot;
 
-    var json = { action: "health", data: health, botId: botId };
+    const json = { action: "health", data: health, botId };
     send("data", json);
   }
 }
 
 function sendHunger() {
   if (bot != null) {
-    var hunger = bot.food;
+    const hunger = bot.food;
 
-    var json = { action: "hunger", data: hunger, botId: botId };
+    const json = { action: "hunger", data: hunger, botId };
     send("data", json);
   }
 }
