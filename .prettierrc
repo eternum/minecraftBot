@@ -1,5 +1,6 @@
 {
   "tabWidth": 2,
+  "useTabs": false,
   "arrowParens": "always",
   "bracketSpacing": true,
   "endOfLine": "lf",
@@ -12,7 +13,7 @@
   "quoteProps": "as-needed",
   "requirePragma": false,
   "semi": true,
-  "singleQuote": true,
+  "singleQuote": false,
   "trailingComma": "es5",
   "vueIndentScriptAndStyle": false,
   "parser": "babel"
