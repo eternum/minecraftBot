@@ -8,13 +8,12 @@
   ],
   "rules": {
     "prettier/prettier": "error",
-    "no-unused-vars": "off",
-    "no-console": "off",
+    "no-unused-vars": "warn",
+    "no-console": "warn",
     "func-names": "off",
     "class-methods-use-this": "warn",
     "import/no-extraneous-dependencies": "warn"
   },
   "parserOptions": {
     "sourceType": "module"
-  }
-}
+  }}
