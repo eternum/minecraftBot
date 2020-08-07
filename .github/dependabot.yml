@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    reviewers:
+      - "saharshy29"
+    assignees:
+      - "saharshy29"
+    open-pull-requests-limit: 10
+    rebase-strategy: "auto"
+    commit-message:
+      prefix: "⬆️dependabot:"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    reviewers:
+      - "saharshy29"
+    assignees:
+      - "saharshy29"
+    open-pull-requests-limit: 10
+    rebase-strategy: "auto"
+    commit-message:
+      prefix: "⬆️dependabot:"
+    schedule:
+      interval: "daily"
