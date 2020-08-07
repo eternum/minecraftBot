@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <span></span>
+    <link rel="stylesheet" href="static/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>Bot Controller</h1>
+      <div class="botSelector" style="width: 200px;">
+        <select id="botSelected" class="custom-select">
+          <option selected>Select Bot</option>
+          <option value="1">Boomer</option>
+          <option value="2">nickbot</option>
+        </select>
+      </div>
+      <div class="toggle-dark">
+        <div class="toggle">
+          <input
+            type="button"
+            class="btn btn-primary"
+            value="toggle theme"
+            onclick="toggleTheme();"
+          />
+          <label for="toggle"></label>
+        </div>
+      </div>
+      <div class="status">
+        <div class="card bg-light">
+          <div class="card-header">
+            WebSocket:
+            <span id="serverStatus" class="badge badge-danger">Offline</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-container">
+      <div class="controlCard">
+        <div class="card bg-light">
+          <h3 class="card-header">Controls</h3>
+          <div class="card-body">
+            <h6>Bot:</h6>
+            <button type="button" onclick="startBot()" class="btn btn-success">
+              start
+            </button>
+            <button type="button" onclick="stopBot()" class="btn btn-danger">
+              stop</button
+            ><br />
+            <h6 class="mt-4">Websocket:</h6>
+            <button
+              type="button"
+              onclick="startWebSocket()"
+              class="btn btn-success"
+            >
+              open
+            </button>
+            <button
+              type="button"
+              onclick="closeWebSocket()"
+              class="btn btn-outline-danger"
+            >
+              close
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="controlCard">
+        <div class="card bg-light">
+          <h3 class="card-header">Status</h3>
+          <div class="card-body">
+            <span class="dark-text">Coordinates:</span>
+
+            <span id="coords" class="badge badge-primary">0 0 0</span><br />
+
+            <span class="dark-text">Health: </span>
+            <span id="health" class="badge badge-danger">20</span><br />
+            <span class="dark-text">Hunger: </span>
+            <span id="hunger" class="badge badge-warning">20</span><br />
+          </div>
+        </div>
+      </div>
+      <div class="controlCard">
+        <div class="card bg-light">
+          <h3 class="card-header">Settings</h3>
+          <div class="card-body">
+            <form role="form">
+              <div class="form-group">
+                <label class="dark-text">Server address</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="server"
+                  placeholder="mc.hackclub.com"
+                />
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1" class="dark-text"
+                  >Port</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="port"
+                  placeholder="25565"
+                />
+              </div>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                onclick="setServer()"
+              >
+                Set
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="controlCard">
+        <div class="card bg-light">
+          <h3 class="card-header">Movement</h3>
+          <div class="card-body">
+
+            <div class="keys container">
+              <div class="row justify-content-center">
+                <span class="key" id="w">W</span>
+              </div>
+              <div class="row justify-content-center">
+                <span class="key" id="a">A</span>
+                <span class="key" id="s">S</span>
+                <span class="key" id="d">D</span>
+              </div>
+              <div class="row justify-content-center">
+                <span class="key key-wide" id="spacebar">spacebar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="static/index.js"></script>
+  </body>
+  <script>
+    feather.replace();
+  </script>
+</html>

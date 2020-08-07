@@ -1,0 +1,49 @@
+<!-- prettier-ignore -->
+<div class="botCard" id=<%-bot.name%> data-ip=<%-bot.server.ip%> data-port=<%-bot.server.port%>     >
+  <div class="card">
+    <div class="card-header card-header-bot">
+      <div class="botHead">
+        <h3 class="mb-0 mr-2"> <a href=<%-bot.name%>> <%- bot.name %> </a> </h3>
+        <h3 class="statusBadge"><span id=<%-bot.name%>.status class="badge badge-warning"><%= bot.status %></span></h3>
+      </div>
+      <div class="botStartStop">
+          <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-success">
+              <i data-feather="play"></i>
+            </button>
+            <button type="button" class="btn btn-danger" disabled>
+              <i data-feather="pause"></i>
+            </button>
+          </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm">
+          <button type="button" class="btn" data-toggle="modal" data-target="#serverModal" data-name=<%- bot.name %> >
+            <i data-feather="settings"></i>
+          </button>
+        </div>
+        <div class="col-sm">
+          <span class="dark-text">Coordinates:</span>
+
+          <span id=<%-bot.name%>.coords class="badge badge-primary">
+            <%= bot.coords %>
+          </span>
+          <br />
+
+          <span class="dark-text">Health: </span>
+          <span id=<%-bot.name%>.health class="badge badge-danger">
+            <%= bot.health %>
+          </span>
+          <br />
+          <span class="dark-text">Hunger: </span>
+          <span id=<%-bot.name%>.hunger class="badge badge-warning">
+            <%= bot.hunger %>
+          </span>
+          <br />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
