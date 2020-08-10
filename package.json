@@ -23,7 +23,7 @@
     "express": "4.17.1",
     "express-session": "1.17.1",
     "js-yaml": "3.14.0",
-    "mineflayer": "2.25.0",
+    "mineflayer": "2.27.0",
     "node-ipc": "9.1.1",
     "passport": "0.4.1",
     "passport-github": "^1.1.0",
